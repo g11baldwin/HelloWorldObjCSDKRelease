@@ -26,6 +26,7 @@
 				NSLog(@"key=%@ value=%@", key, [user objectForKey:key]);
 			}
 			NSString *firstName = [user objectForKey:@"firstName"];
+            NSString *lastName = [user objectForKey:@"lastName"];
 			NSString *handle = [user objectForKey:@"handle"];
 			NSString *userId = [user objectForKey:@"userId"];
 			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -33,6 +34,7 @@
 			vc.firstName = firstName;
 			vc.handle = handle;
 			vc.userId = userId;
+            vc.lastName = lastName;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
 		}

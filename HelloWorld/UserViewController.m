@@ -12,7 +12,9 @@
 
 
 @interface UserViewController ()
-@property (weak, nonatomic) IBOutlet UILabel *topLabel;
+@property (weak, nonatomic) IBOutlet UILabel *handleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
 
 @end
 
@@ -21,16 +23,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.topLabel.text = [NSString stringWithFormat:@"%@%@", @"Hello ", self.firstName];
+    self.handleLabel.text = self.handle;
+    self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.firstName, self.lastName];
+    self.profileImageView.image = [[PPManager sharedInstance].PPusersvc getProfilePic];
     
-    [[PPManager sharedInstance].PPusersvc getProfilePic:^(UIImage *userProfilePic, NSError *error) {
-        if(!error) {
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:userProfilePic];
-            imageView.frame = CGRectMake(160,300, 120,120);
-            imageView.opaque = FALSE;
-            [self.view addSubview:imageView];
-        } 
-    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -42,15 +38,5 @@
     [[PPManager sharedInstance].PPusersvc logout];
 	[self dismissViewControllerAnimated:true completion:NULL];
 }
-
-- (IBAction)getProfile:(id)sender {
-    [[PPManager sharedInstance].PPusersvc getProfile:^(NSError* error) {
-        if(!error) {
-            NSLog(@"handle=%@", self.handle);
-        }
-    }];
-}
-
-
 
 @end

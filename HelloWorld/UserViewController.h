@@ -11,6 +11,7 @@
 @interface UserViewController : UIViewController
 
 @property (readwrite, nonatomic, copy) NSString *firstName;
+@property (readwrite, nonatomic, copy) NSString *lastName;
 @property (readwrite, nonatomic, copy) NSString *handle;
 @property (readwrite, nonatomic, copy) NSString *userId;
 

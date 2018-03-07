@@ -80,7 +80,7 @@
     }];
 }
 
-- (void)getProfilePic: (void(^)(UIImage* userProfilePic, NSError *error))handler
+- (UIImage*)getProfilePic
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
     
@@ -93,13 +93,21 @@
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [req setValue:btoken forHTTPHeaderField:@"Authorization"];
     
-    [d downloadImageForURLRequest:req  success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
-        NSLog(@"response:%@", response);
-        handler(responseObject, NULL);
-    } failure:^(NSURLRequest *request , NSHTTPURLResponse *_Nullable response , NSError *error) {
-        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        handler(NULL, error);
-    }];
+    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    return image;
+    
+    
+//    [d downloadImageForURLRequest:req  success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
+//        NSLog(@"response:%@", response);
+////        handler(responseObject, NULL);
+////        return responseObject;
+//    } failure:^(NSURLRequest *request , NSHTTPURLResponse *_Nullable response , NSError *error) {
+//        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+////        handler(NULL, error);
+////        return NULL;
+//    }];
 }
 
 - (NSString*)getMyId
