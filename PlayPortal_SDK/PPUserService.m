@@ -81,9 +81,7 @@
 - (UIImage*)getProfilePic
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
-    
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
@@ -92,9 +90,8 @@
     
     NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
     UIImage *image = [UIImage imageWithData:imageData];
-    
-    return image;
 
+    return image;
 }
 
 - (NSString*)getMyId
