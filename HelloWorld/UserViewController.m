@@ -25,9 +25,10 @@
     
     [[PPManager sharedInstance].PPusersvc getProfilePic:^(UIImage *userProfilePic, NSError *error) {
         if(!error) {
-//            UIImageView *imageView = [[UIImageView alloc] initWithImage:userProfilePic];
-//            imageView.frame = CGRectMake(0,0, 100,100);
-//            [self.view addSubview:imageView];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:userProfilePic];
+            imageView.frame = CGRectMake(160,300, 120,120);
+            imageView.opaque = FALSE;
+            [self.view addSubview:imageView];
         } 
     }];
 }
