@@ -88,11 +88,6 @@
 
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-
-//    manager.responseSerializer = (AFImageResponseSerializer*)[UIImageView sharedImageDownloader];
-//    manager.responseSerializer.acceptableContentTypes =
-//    [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
-
     AFImageDownloader *d = [[AFImageDownloader alloc] init];
     NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
