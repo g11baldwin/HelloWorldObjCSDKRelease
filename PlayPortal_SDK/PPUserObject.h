@@ -11,6 +11,7 @@
 
 @interface PPUserObject : NSObject
 
+@property NSString* userId;
 @property NSString* handle;
 @property NSString* firstName;
 @property NSString* lastName;
@@ -21,5 +22,7 @@
 @property UIImage* profilePic;
 @property NSString* coverPhotoId;
 @property UIImage* coverPhoto;
+
+- (void)inflateWith:(NSDictionary*)d;
 
 @end

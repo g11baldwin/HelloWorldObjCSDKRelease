@@ -63,7 +63,8 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
-		NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+        NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+        [[PPManager sharedInstance].PPuserobj inflateWith:user];
 		[self dismissSafari];
 		self.addUserListener(user, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
@@ -100,7 +101,7 @@
 }
 - (NSString*)getMyUsername
 {
-    return (_userDictionary != nil) ? [_userDictionary valueForKey:@"handle"] : @"unknown";
+    return (_userDictionary != nil) ? [[PPManager sharedInstance].PPuserobj valueForKey:@"handle"] : @"unknown";
 }
 -(void)dismissSafari
 {

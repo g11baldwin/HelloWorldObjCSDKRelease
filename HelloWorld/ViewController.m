@@ -18,23 +18,17 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[PPManager sharedInstance].PPusersvc.addUserListener = ^(NSDictionary *user, NSError *error){
+    [PPManager sharedInstance].PPusersvc.addUserListener = ^(PPUserObject *user, NSError *error){
 		if (error) {
 			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
 		} else {
-			for(id key in user) {
-				NSLog(@"key=%@ value=%@", key, [user objectForKey:key]);
-			}
-			NSString *firstName = [user objectForKey:@"firstName"];
-            NSString *lastName = [user objectForKey:@"lastName"];
-			NSString *handle = [user objectForKey:@"handle"];
-			NSString *userId = [user objectForKey:@"userId"];
+            NSLog(@"username=%@", user.handle);
 			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 			UserViewController *vc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-			vc.firstName = firstName;
-			vc.handle = handle;
-			vc.userId = userId;
-            vc.lastName = lastName;
+			vc.firstName = user.firstName;
+			vc.handle = user.handle;
+			vc.userId = user.userId;
+            vc.lastName = user.lastName;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
 		}
