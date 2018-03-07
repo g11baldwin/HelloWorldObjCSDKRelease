@@ -7,6 +7,8 @@
 //
 
 #import "ViewController.h"
+#import "UserViewController.h"
+#import "PPManager.h"
 
 @interface ViewController ()
 
@@ -16,14 +18,31 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	[PPManager sharedInstance].PPusersvc.addUserListener = ^(NSDictionary *user, NSError *error){
+		if (error) {
+			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+		} else {
+			for(id key in user) {
+				NSLog(@"key=%@ value=%@", key, [user objectForKey:key]);
+			}
+			NSString *firstName = [user objectForKey:@"firstName"];
+			NSString *handle = [user objectForKey:@"handle"];
+			NSString *userId = [user objectForKey:@"userId"];
+			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+			UserViewController *vc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+			vc.firstName = firstName;
+			vc.handle = handle;
+			vc.userId = userId;
+			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+			[self presentViewController:vc animated:YES completion:NULL];
+		}
+	};
 }
 
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-	// Dispose of any resources that can be recreated.
+- (IBAction)login:(id)sender {
+	[[PPManager sharedInstance].PPusersvc login];
 }
+
 
 
 @end
