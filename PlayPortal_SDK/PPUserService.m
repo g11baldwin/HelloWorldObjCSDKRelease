@@ -89,8 +89,9 @@
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
 
-    manager.responseSerializer = (AFImageResponseSerializer*)[UIImageView sharedImageDownloader];
-    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
+//    manager.responseSerializer = (AFImageResponseSerializer*)[UIImageView sharedImageDownloader];
+//    manager.responseSerializer.acceptableContentTypes =
+//    [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
 
     AFImageDownloader *d = [[AFImageDownloader alloc] init];
     NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
@@ -98,6 +99,7 @@
     [req setValue:btoken forHTTPHeaderField:@"Authorization"];
     
     [d downloadImageForURLRequest:req  success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
+        NSLog(@"response:%@", response);
         handler(responseObject, NULL);
     } failure:^(NSURLRequest *request , NSHTTPURLResponse *_Nullable response , NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
