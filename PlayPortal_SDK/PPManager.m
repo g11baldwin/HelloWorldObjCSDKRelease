@@ -11,6 +11,7 @@
 
 #import "PPManager.h"
 #import "AFNetworking.h"
+#import "AFImageDownloader.h"
 
 @interface PPManager()
 
@@ -47,6 +48,8 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [manager.requestSerializer setValue:btoken forHTTPHeaderField:@"Authorization"];
+//    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
+
     return manager;
 }
 

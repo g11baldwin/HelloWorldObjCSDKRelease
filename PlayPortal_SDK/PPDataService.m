@@ -99,7 +99,7 @@
 {
     if(bucketName && key) {
         NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"];
-        NSDictionary *body = @{@"id":bucketName, @"key":key, @"access_token": [[PPManager sharedInstance] getAccessToken]};
+        NSDictionary *body = @{@"id":bucketName, @"key":key, @"": @"value", @"access_token": [[PPManager sharedInstance] getAccessToken]};
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
         NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];

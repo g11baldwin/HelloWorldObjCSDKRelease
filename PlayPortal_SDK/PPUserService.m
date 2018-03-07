@@ -9,6 +9,8 @@
 #import "PPUserService.h"
 #import "PPManager.h"
 #import "AFNetworking.h"
+#import "AFImageDownloader.h"
+#import "UIImageView+AFNetworking.h"
 #import <SafariServices/SafariServices.h>
 
 @interface PPUserService()
@@ -77,6 +79,32 @@
         }
     }];
 }
+
+- (void)getProfilePic: (void(^)(UIImage* userProfilePic, NSError *error))handler
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+
+    manager.responseSerializer = (AFImageResponseSerializer*)[UIImageView sharedImageDownloader];
+    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
+
+    AFImageDownloader *d = [[AFImageDownloader alloc] init];
+    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+    
+    [d downloadImageForURLRequest:req  success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
+        handler(responseObject, NULL);
+    } failure:^(NSURLRequest *request , NSHTTPURLResponse *_Nullable response , NSError *error) {
+        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        handler(NULL, error);
+    }];
+}
+
 - (NSString*)getMyId
 {
     return (_userDictionary != nil) ? [_userDictionary valueForKey:@"userId"] : @"0";
