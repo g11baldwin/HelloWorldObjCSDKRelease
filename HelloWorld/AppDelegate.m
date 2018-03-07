@@ -21,9 +21,7 @@ NSString *cse = @"iok-cse-d11ea79c8ed30200c74644cdb7423ffef0ea5a35a44e678c";
 NSString *redirectURI = @"helloworld://redirect";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	// Override point for customization after application launch.
-	
-	//TODO: comments
+
 	[[PPManager sharedInstance] configure:cid secret:cse andRedirectURI:redirectURI];
 	
 	return YES;
