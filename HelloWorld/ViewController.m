@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "UserViewController.h"
 #import "PPManager.h"
+#import "PPLoginButton.h"
 
 @interface ViewController ()
 
@@ -39,6 +40,11 @@
 			[self presentViewController:vc animated:YES completion:NULL];
 		}
 	};
+    
+    CGRect rect = CGRectMake(86,252,148,44);
+    PPLoginButton *glossyBtn = [[PPLoginButton alloc] initWithFrame:rect];
+    [self.view addSubview:glossyBtn];
+    [self.view bringSubviewToFront:glossyBtn];
 }
 
 - (IBAction)login:(id)sender {
