@@ -9,8 +9,6 @@
 #import "PPUserService.h"
 #import "PPManager.h"
 #import "AFNetworking.h"
-#import "AFImageDownloader.h"
-#import "UIImageView+AFNetworking.h"
 #import <SafariServices/SafariServices.h>
 
 @interface PPUserService()
@@ -88,7 +86,6 @@
 
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    AFImageDownloader *d = [[AFImageDownloader alloc] init];
     NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [req setValue:btoken forHTTPHeaderField:@"Authorization"];
@@ -97,17 +94,7 @@
     UIImage *image = [UIImage imageWithData:imageData];
     
     return image;
-    
-    
-//    [d downloadImageForURLRequest:req  success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
-//        NSLog(@"response:%@", response);
-////        handler(responseObject, NULL);
-////        return responseObject;
-//    } failure:^(NSURLRequest *request , NSHTTPURLResponse *_Nullable response , NSError *error) {
-//        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-////        handler(NULL, error);
-////        return NULL;
-//    }];
+
 }
 
 - (NSString*)getMyId

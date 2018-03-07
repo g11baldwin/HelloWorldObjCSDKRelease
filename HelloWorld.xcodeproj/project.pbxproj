@@ -203,10 +203,10 @@
 		03530FE0204F5A1B002D9244 /* PlayPortal_SDK */ = {
 			isa = PBXGroup;
 			children = (
+				03530FE4204F5A1B002D9244 /* playportal_sdk.h */,
 				03530FE2204F5A1B002D9244 /* PPManager.h */,
 				03530FE8204F5A1B002D9244 /* PPManager.m */,
 				03530FE3204F5A1B002D9244 /* PPDataService.h */,
-				03530FE4204F5A1B002D9244 /* playportal_sdk.h */,
 				03530FE5204F5A1B002D9244 /* PPUserService.h */,
 				03530FE1204F5A1B002D9244 /* PPUserService.m */,
 				03530FE6204F5A1B002D9244 /* PPDataService.m */,
