@@ -7,12 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface PPUserService : NSObject
 @property (nonatomic, copy) void (^addUserListener)(NSDictionary* user, NSError *error);
 - (void)login;
 - (void)logout;
 - (void)getProfile: (void(^)(NSError *error))handler;
+- (void)getProfilePic: (void(^)(UIImage* userProfilePic, NSError *error))handler;
 - (NSString*)getMyId;
 - (NSString*)getMyUsername;
 @end
