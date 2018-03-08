@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,37 +19,33 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1kU-12-sqO">
-                                <rect key="frame" x="16" y="343" width="343" height="324"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nRW-qf-DHa">
-                                        <rect key="frame" x="152" y="147" width="38" height="30"/>
-                                        <state key="normal" title="Login"/>
-                                        <connections>
-                                            <action selector="login:" destination="BYZ-38-t0r" eventType="touchUpInside" id="CWV-p6-peI"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello World" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r0G-xL-z3x">
+                                <rect key="frame" x="16" y="50" width="343" height="68"/>
                                 <constraints>
-                                    <constraint firstItem="nRW-qf-DHa" firstAttribute="centerX" secondItem="1kU-12-sqO" secondAttribute="centerX" id="IBe-yr-AGL"/>
-                                    <constraint firstItem="nRW-qf-DHa" firstAttribute="centerY" secondItem="1kU-12-sqO" secondAttribute="centerY" id="QMY-uR-a6u"/>
+                                    <constraint firstAttribute="height" constant="68" id="K7c-8d-Eho"/>
                                 </constraints>
-                            </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hello World" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7cT-Rt-mfr">
-                                <rect key="frame" x="16" y="20" width="343" height="315"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="playPORTAL Objective-C SDK" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zBi-he-E8h">
+                                <rect key="frame" x="16" y="126" width="343" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="DsE-lc-q7g"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="1kU-12-sqO" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="4X5-QX-Xc2"/>
-                            <constraint firstItem="1kU-12-sqO" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="j10-Ui-vp3"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1kU-12-sqO" secondAttribute="trailing" constant="16" id="u4a-39-MTh"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1kU-12-sqO" secondAttribute="bottom" id="zp4-mi-jel"/>
+                            <constraint firstItem="r0G-xL-z3x" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="ITH-H1-CUL"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="r0G-xL-z3x" secondAttribute="trailing" constant="16" id="PPZ-kh-fwh"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zBi-he-E8h" secondAttribute="trailing" constant="16" id="WE1-Xg-WbY"/>
+                            <constraint firstItem="zBi-he-E8h" firstAttribute="top" secondItem="r0G-xL-z3x" secondAttribute="bottom" constant="8" id="oqy-ft-Exb"/>
+                            <constraint firstItem="r0G-xL-z3x" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="vQR-Fk-yD4"/>
+                            <constraint firstItem="zBi-he-E8h" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="ymJ-JJ-nWw"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

@@ -56,8 +56,6 @@
 	[[PPManager sharedInstance] logout];
 }
 
-
-// return full user profile (if unable to get latest, provide a cached version if it exists)
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
@@ -104,6 +102,7 @@
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [req setValue:btoken forHTTPHeaderField:@"Authorization"];
     
+    // TODO: replace deprecated
     NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
     UIImage *image = [UIImage imageWithData:imageData];
     
@@ -114,10 +113,12 @@
 {
     return (_userDictionary != nil) ? [_userDictionary valueForKey:@"userId"] : @"0";
 }
+
 - (NSString*)getMyUsername
 {
     return (_userDictionary != nil) ? [[PPManager sharedInstance].PPuserobj valueForKey:@"handle"] : @"unknown";
 }
+
 -(void)dismissSafari
 {
 	UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;

@@ -35,6 +35,8 @@
 		0353101D204F5AC9002D9244 /* AFAutoPurgingImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531013204F5AC9002D9244 /* AFAutoPurgingImageCache.m */; };
 		0353101E204F5AC9002D9244 /* AFImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531015204F5AC9002D9244 /* AFImageDownloader.m */; };
 		03531021204F86AE002D9244 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531020204F86AE002D9244 /* UserViewController.m */; };
+		50E8ADDC2050987B00E62D6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50E8ADDB2050987B00E62D6F /* Assets.xcassets */; };
+		50E8ADDF20509B9500E62D6F /* PPLoginButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E8ADDE20509B9500E62D6F /* PPLoginButton.m */; };
 		46BD345920509A8400001F28 /* PPUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BD345720509A8400001F28 /* PPUserObject.m */; };
 /* End PBXBuildFile section */
 
@@ -115,6 +117,9 @@
 		03531015204F5AC9002D9244 /* AFImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageDownloader.m; sourceTree = "<group>"; };
 		0353101F204F86AE002D9244 /* UserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
 		03531020204F86AE002D9244 /* UserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
+		50E8ADDB2050987B00E62D6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		50E8ADDD20509B9500E62D6F /* PPLoginButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPLoginButton.h; sourceTree = "<group>"; };
+		50E8ADDE20509B9500E62D6F /* PPLoginButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPLoginButton.m; sourceTree = "<group>"; };
 		46BD345720509A8400001F28 /* PPUserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPUserObject.m; sourceTree = "<group>"; };
 		46BD345820509A8400001F28 /* PPUserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPUserObject.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -216,6 +221,9 @@
 				03530FE1204F5A1B002D9244 /* PPUserService.m */,
 				03530FE6204F5A1B002D9244 /* PPDataService.m */,
 				03530FE7204F5A1B002D9244 /* Info.plist */,
+				50E8ADDB2050987B00E62D6F /* Assets.xcassets */,
+				50E8ADDD20509B9500E62D6F /* PPLoginButton.h */,
+				50E8ADDE20509B9500E62D6F /* PPLoginButton.m */,
 			);
 			path = PlayPortal_SDK;
 			sourceTree = "<group>";
@@ -377,6 +385,7 @@
 				03530FBB204F58A7002D9244 /* LaunchScreen.storyboard in Resources */,
 				03530FB8204F58A7002D9244 /* Assets.xcassets in Resources */,
 				03530FB6204F58A7002D9244 /* Main.storyboard in Resources */,
+				50E8ADDC2050987B00E62D6F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,6 +430,7 @@
 				03530FFF204F5A22002D9244 /* AFNetworkReachabilityManager.m in Sources */,
 				0353101D204F5AC9002D9244 /* AFAutoPurgingImageCache.m in Sources */,
 				0353101C204F5AC9002D9244 /* UIWebView+AFNetworking.m in Sources */,
+				50E8ADDF20509B9500E62D6F /* PPLoginButton.m in Sources */,
 				03530FFC204F5A22002D9244 /* AFHTTPSessionManager.m in Sources */,
 				03531016204F5AC9002D9244 /* UIProgressView+AFNetworking.m in Sources */,
 				03531018204F5AC9002D9244 /* AFNetworkActivityIndicatorManager.m in Sources */,

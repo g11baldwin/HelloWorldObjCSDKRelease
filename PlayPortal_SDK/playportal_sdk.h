@@ -18,4 +18,5 @@ FOUNDATION_EXPORT const unsigned char playportal_sdkVersionString[];
 #import <playportal_sdk/PPManager.h>
 #import <playportal_sdk/PPUserService.h>
 #import <playportal_sdk/PPDataService.h>
+#import <playportal_sdk/PPLoginButton.h>
 
