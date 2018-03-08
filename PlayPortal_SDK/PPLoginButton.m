@@ -13,12 +13,19 @@
 @implementation PPLoginButton
 
 -(id)init {
-    CGRect rect = CGRectMake(0, 0, 257, 52);
+    
+    //Ratio is 279w / 55h
+    CGFloat buttonWidth = [UIScreen mainScreen].bounds.size.width * 0.7;
+    if (buttonWidth > 300) {
+        buttonWidth = 300;
+    }
+    CGFloat buttonHeight = buttonWidth * 55 / 279;
+    CGRect rect = CGRectMake(0, 0, buttonWidth, buttonHeight);
     self = [super initWithFrame:rect];
     if (self) {
         [self addImage];
         [self addTarget:self action:@selector(didTouchButton) forControlEvents:UIControlEventTouchUpInside];
-        self.layer.cornerRadius = 26;
+        self.layer.cornerRadius = buttonHeight / 2;
         self.layer.masksToBounds = YES;
     }
     return self;

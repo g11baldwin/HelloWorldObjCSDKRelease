@@ -16,8 +16,8 @@
 @implementation AppDelegate
 
 //TODO: comments
-NSString *cid = @"iok-cid-96252d9d5cc697e94af09676f130d646931b1f3ee9d54492";
-NSString *cse = @"iok-cse-d11ea79c8ed30200c74644cdb7423ffef0ea5a35a44e678c";
+NSString *cid = @"iok-cid-e1fa99fb361123b78cb6bcafcd639fb49c31766bc3eddf94";
+NSString *cse = @"iok-cse-1778988ca3843a3c227c3fa5ced3be62d359a0aa87a169d5";
 NSString *redirectURI = @"helloworld://redirect";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

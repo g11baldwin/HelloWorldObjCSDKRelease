@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *handleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *coverPhotoImageView;
 
 @end
 
@@ -27,6 +28,7 @@
     self.handleLabel.text = self.user.handle;
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
     self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic];
+    self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic];
     
 }
 

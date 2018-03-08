@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -62,8 +63,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DPl-KF-2af">
-                                <rect key="frame" x="112" y="40" width="150" height="150"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="JLp-HG-sdf" userLabel="CoverPhoto">
+                                <rect key="frame" x="16" y="60" width="343" height="110"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="110" id="sPZ-1S-iXB"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DPl-KF-2af">
+                                <rect key="frame" x="112" y="95" width="150" height="150"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="DPl-KF-2af" secondAttribute="height" multiplier="1:1" id="1Y7-g7-vOR"/>
                                     <constraint firstAttribute="height" constant="150" id="h6C-3j-rES"/>
@@ -77,7 +84,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{handle}" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BCD-Dc-ohj">
-                                <rect key="frame" x="0.0" y="198" width="375" height="33"/>
+                                <rect key="frame" x="0.0" y="253" width="375" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="33" id="aoJ-E6-8EA"/>
                                 </constraints>
@@ -86,7 +93,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{name}" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UNC-7U-zhF">
-                                <rect key="frame" x="0.0" y="239" width="375" height="33"/>
+                                <rect key="frame" x="0.0" y="294" width="375" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="33" id="RBQ-oh-4BH"/>
                                 </constraints>
@@ -100,18 +107,22 @@
                             <constraint firstItem="UNC-7U-zhF" firstAttribute="top" secondItem="BCD-Dc-ohj" secondAttribute="bottom" constant="8" id="2Qf-OE-2Ri"/>
                             <constraint firstItem="BCD-Dc-ohj" firstAttribute="top" secondItem="DPl-KF-2af" secondAttribute="bottom" constant="8" id="94B-j1-iCk"/>
                             <constraint firstItem="BCD-Dc-ohj" firstAttribute="width" secondItem="IZk-8Z-qgq" secondAttribute="width" id="ApY-eB-WIL"/>
+                            <constraint firstItem="JLp-HG-sdf" firstAttribute="top" secondItem="TBk-cX-6t0" secondAttribute="top" constant="40" id="Bn8-3B-rFd"/>
                             <constraint firstItem="TBk-cX-6t0" firstAttribute="bottom" secondItem="NiJ-fT-Iok" secondAttribute="bottom" constant="20" id="K5d-iQ-GtC"/>
-                            <constraint firstItem="DPl-KF-2af" firstAttribute="top" secondItem="TBk-cX-6t0" secondAttribute="top" constant="20" id="Q08-F6-Ndp"/>
                             <constraint firstItem="UNC-7U-zhF" firstAttribute="centerX" secondItem="BCD-Dc-ohj" secondAttribute="centerX" id="WFI-af-9Ij"/>
+                            <constraint firstItem="JLp-HG-sdf" firstAttribute="leading" secondItem="TBk-cX-6t0" secondAttribute="leading" constant="16" id="WVS-YP-O2c"/>
                             <constraint firstItem="NiJ-fT-Iok" firstAttribute="centerX" secondItem="TBk-cX-6t0" secondAttribute="centerX" id="jPc-de-n7g"/>
                             <constraint firstItem="UNC-7U-zhF" firstAttribute="width" secondItem="BCD-Dc-ohj" secondAttribute="width" id="kkG-W5-tT5"/>
                             <constraint firstItem="UNC-7U-zhF" firstAttribute="height" secondItem="BCD-Dc-ohj" secondAttribute="height" id="nAC-Nq-O3h"/>
+                            <constraint firstItem="DPl-KF-2af" firstAttribute="centerY" secondItem="JLp-HG-sdf" secondAttribute="bottom" id="s6u-vH-7R9"/>
+                            <constraint firstItem="TBk-cX-6t0" firstAttribute="trailing" secondItem="JLp-HG-sdf" secondAttribute="trailing" constant="16" id="w1L-A6-zLk"/>
                             <constraint firstItem="BCD-Dc-ohj" firstAttribute="centerX" secondItem="TBk-cX-6t0" secondAttribute="centerX" id="wyi-Nn-WcH"/>
                             <constraint firstItem="DPl-KF-2af" firstAttribute="centerX" secondItem="TBk-cX-6t0" secondAttribute="centerX" id="zy2-Qf-U8E"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="TBk-cX-6t0"/>
                     </view>
                     <connections>
+                        <outlet property="coverPhotoImageView" destination="JLp-HG-sdf" id="xyk-Jh-Pgx"/>
                         <outlet property="handleLabel" destination="BCD-Dc-ohj" id="CNL-1S-4kD"/>
                         <outlet property="nameLabel" destination="UNC-7U-zhF" id="g1V-38-NeP"/>
                         <outlet property="profileImageView" destination="DPl-KF-2af" id="StG-Jb-oxa"/>
