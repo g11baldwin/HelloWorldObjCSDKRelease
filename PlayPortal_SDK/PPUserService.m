@@ -7,6 +7,7 @@
 //
 
 #import "PPUserService.h"
+#import "PPDataService.h"
 #import "PPManager.h"
 #import "AFNetworking.h"
 #import <SafariServices/SafariServices.h>
@@ -59,20 +60,25 @@
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
+    [self dismissSafari];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
-		[self dismissSafari];
+
+        // attempt to create / open this user's private data storage
+        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
+            if(error) {
+                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+            }
+        }];
         self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        if(_userDictionary == nil) {
-			[self dismissSafari];
-			self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+        if([PPManager sharedInstance].PPuserobj == nil) {
+            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
         } else {
-			[self dismissSafari];
-			self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         }
     }];
 }

@@ -12,6 +12,26 @@
 
 @implementation PPDataService
 
+// Either creates a new bucket or joins an existing bucket
+-(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
+{
+    if(bucketName && users && users.count) {
+        // do a GET from the bucketName to see if it exists (or not)
+        [self readAllFromBucket:bucketName handler:^(NSDictionary* d, NSError* error) {
+            if(d) {
+                handler(NULL); // bucket exists
+            } else { // create one
+                [self createBucket:bucketName andUsers:users handler:^(NSError* error) {
+                    if(error) NSLog(@"%@ Error: dang... bucket problems! %@", NSStringFromSelector(_cmd), error);
+                }];
+            }
+        }];
+        
+    } else {
+        handler([NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+    }
+}
+
 // Create a new bucket or join to an existing bucket
 -(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
 {
