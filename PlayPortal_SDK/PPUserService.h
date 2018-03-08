@@ -17,6 +17,7 @@
 - (void)logout;
 - (void)getProfile: (void(^)(NSError *error))handler;
 - (UIImage*)getProfilePic;
+- (UIImage*)getCoverPic;
 - (NSString*)getMyId;
 - (NSString*)getMyUsername;
 @end

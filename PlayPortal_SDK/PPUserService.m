@@ -94,6 +94,21 @@
 
     return image;
 }
+- (UIImage*)getCoverPic
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+    
+    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    return image;
+}
 
 - (NSString*)getMyId
 {
