@@ -66,7 +66,7 @@
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
 		[self dismissSafari];
-		self.addUserListener(user, NULL);
+        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         if(_userDictionary == nil) {
@@ -74,7 +74,7 @@
 			self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
         } else {
 			[self dismissSafari];
-			self.addUserListener(_userDictionary, NULL);
+			self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         }
     }];
 }
