@@ -41,14 +41,15 @@
 		}
 	};
     
-    CGRect rect = CGRectMake(86,252,148,44);
-    PPLoginButton *glossyBtn = [[PPLoginButton alloc] initWithFrame:rect];
-    [self.view addSubview:glossyBtn];
-    [self.view bringSubviewToFront:glossyBtn];
-}
-
-- (IBAction)login:(id)sender {
-	[[PPManager sharedInstance].PPusersvc login];
+    
+    //PPLoginButton handles all auth flow
+    PPLoginButton *loginButton = [[PPLoginButton alloc] init];
+    loginButton.center = self.view.center;
+    [self.view addSubview:loginButton];
+    
+    //Or you can add a manual call to log a user in
+    //[[PPManager sharedInstance].PPusersvc login];
+    
 }
 
 

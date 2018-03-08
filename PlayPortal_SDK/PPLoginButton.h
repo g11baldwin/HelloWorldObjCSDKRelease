@@ -10,6 +10,6 @@
 
 @interface PPLoginButton : UIButton
 
-- (id)initWithFrame:(CGRect)frame;
+- (id)init;
 
 @end
