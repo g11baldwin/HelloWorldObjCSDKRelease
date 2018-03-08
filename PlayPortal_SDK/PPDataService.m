@@ -19,6 +19,7 @@
         // do a GET from the bucketName to see if it exists (or not)
         [self readAllFromBucket:bucketName handler:^(NSDictionary* d, NSError* error) {
             if(d) {
+                 NSLog(@"%@ User bucket %@ already exists and is opened: %@", NSStringFromSelector(_cmd), bucketName, error);
                 handler(NULL); // bucket exists
             } else { // create one
                 [self createBucket:bucketName andUsers:users handler:^(NSError* error) {
