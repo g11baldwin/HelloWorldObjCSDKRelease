@@ -11,6 +11,6 @@
 
 @interface UserViewController : UIViewController
 
-@property (readwrite, nonatomic, copy) PPUserObject *user;
+@property (readwrite, nonatomic) PPUserObject *user;
 
 @end

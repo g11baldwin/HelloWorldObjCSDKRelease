@@ -9,6 +9,7 @@
 
 #import "UserViewController.h"
 #import "PPManager.h"
+#import "PPUserObject.h"
 
 
 @interface UserViewController ()
@@ -25,7 +26,7 @@
     [super viewDidLoad];
     self.handleLabel.text = self.user.handle;
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
-    self.profileImageView.image = [[PPManager sharedInstance].PPusersvc getProfilePic];
+    self.profileImageView.image = self.user.profilePic;
     
 }
 
