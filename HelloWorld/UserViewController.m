@@ -26,7 +26,7 @@
     [super viewDidLoad];
     self.handleLabel.text = self.user.handle;
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
-    self.profileImageView.image = self.user.profilePic;
+    self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic];
     
 }
 
