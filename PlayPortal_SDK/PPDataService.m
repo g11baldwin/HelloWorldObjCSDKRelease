@@ -141,10 +141,24 @@
 // Deleta all KV pairs from the bucket.
 -(void)emptyBucket:(NSString*)bucketName
 {
-    if(bucketName != nil) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"bucket"];
-        NSURL *url = [NSURL URLWithString:urlString];
-        NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"garybucket-1",@"id", nil ];
+    if(bucketName) {
+        __block NSArray* userlist;
+        [self readBucket:bucketName andKey:@"users" handler: ^(NSDictionary* d, NSError* error) {
+            if(d) userlist = [NSArray arrayWithObjects: [d objectForKey:@"users"], nil]; // get existing bucket user list
+        }];
+        [self deleteBucket:bucketName];
+        [self createBucket:bucketName andUsers:userlist handler:^(NSError* error) {
+            if(error) NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        }];
+    }
+}
+
+// Removes a bucket
+-(void)deleteBucket:(NSString*)bucketName
+{
+    if(bucketName) {
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"]];
+        NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: bucketName,@"id", nil ];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager DELETE:url.absoluteString parameters:parms success:^(NSURLSessionDataTask *task, id responseObject) {
             NSLog(@"%@ responseObject: %@", NSStringFromSelector(_cmd), responseObject);
