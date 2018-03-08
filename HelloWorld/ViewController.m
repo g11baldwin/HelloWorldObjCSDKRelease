@@ -26,10 +26,7 @@
             NSLog(@"username=%@", user.handle);
 			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 			UserViewController *vc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-			vc.firstName = user.firstName;
-			vc.handle = user.handle;
-			vc.userId = user.userId;
-            vc.lastName = user.lastName;
+            vc.user = user;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
 		}
@@ -45,7 +42,5 @@
     //[[PPManager sharedInstance].PPusersvc login];
     
 }
-
-
 
 @end
