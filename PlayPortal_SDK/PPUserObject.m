@@ -13,7 +13,7 @@
 -(void)inflateWith:(NSDictionary*)d;
 {
     for(id key in d) {
-        NSLog(@"key:%@", key);
+        NSLog(@"key:%@ value:%@", key, [d objectForKey:key]);
         [[PPManager sharedInstance].PPuserobj setValue:[d objectForKey:key] forKey:key];
     }
 }
