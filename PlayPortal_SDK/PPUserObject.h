@@ -22,6 +22,7 @@
 @property UIImage* profilePic;
 @property NSString* coverPhotoId;
 @property UIImage* coverPhoto;
+@property NSString* myDataStorage;
 
 - (void)inflateWith:(NSDictionary*)d;
 
