@@ -61,7 +61,9 @@
 	NSString *clientSecret = @"<YOUR CLIENT SECRET HERE>";
 	```
 
+	* Click the "Run" button in XCode.
+
 * ### <b>Step 7:</b> Log In with "Sandbox" User
-	* Tap on the "Log In With playPORTAL" button.
+	* In the running "Hello World" app, tap on the "Log In With playPORTAL" button.
 	* In the Safari page that appears, enter your "Sandbox" user's username & password.
 		* Username is the second value under the profile picture and is prefixed by "@"
