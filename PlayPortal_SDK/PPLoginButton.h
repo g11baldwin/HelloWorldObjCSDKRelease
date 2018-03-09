@@ -3,7 +3,7 @@
 //  HelloWorld
 //
 //  Created by JettBlack on 3/7/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

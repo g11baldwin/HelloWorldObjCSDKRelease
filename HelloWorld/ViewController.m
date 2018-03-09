@@ -2,8 +2,8 @@
 //  ViewController.m
 //  HelloWorld
 //
-//  Created by blackCloud on 3/6/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Created by JettBlack on 3/6/18.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import "ViewController.h"
@@ -19,17 +19,25 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	
+	//The callback function you provide will be called with a PPUserObject after a successful login
     [PPManager sharedInstance].PPusersvc.addUserListener = ^(PPUserObject *user, NSError *error){
+		
 		if (error) {
+			
 			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+			
 		} else {
-            NSLog(@"username=%@", user.handle);
+			
+            //We pass the PPUserObject to the UserViewController for display
 			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 			UserViewController *vc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
             vc.user = user;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
+			
 		}
+		
 	};
     
     
@@ -41,6 +49,10 @@
     //Or you can add a manual call to log a user in
     //[[PPManager sharedInstance].PPusersvc login];
     
+}
+
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
 }
 
 @end
