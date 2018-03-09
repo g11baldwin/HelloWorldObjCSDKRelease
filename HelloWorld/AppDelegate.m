@@ -15,13 +15,12 @@
 
 @implementation AppDelegate
 
-//TODO: comments
-NSString *cid = @"iok-cid-e1fa99fb361123b78cb6bcafcd639fb49c31766bc3eddf94";
-NSString *cse = @"iok-cse-1778988ca3843a3c227c3fa5ced3be62d359a0aa87a169d5";
-NSString *redirectURI = @"helloworld://redirect";
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
+	//Replace these with the values your generated on the playPORTAL Partner Dashboard
+	NSString *cid = @"iok-cid-e1fa99fb361123b78cb6bcafcd639fb49c31766bc3eddf94";
+	NSString *cse = @"iok-cse-1778988ca3843a3c227c3fa5ced3be62d359a0aa87a169d5";
+	NSString *redirectURI = @"helloworld://redirect";
 	[[PPManager sharedInstance] configure:cid secret:cse andRedirectURI:redirectURI];
 	
 	return YES;
