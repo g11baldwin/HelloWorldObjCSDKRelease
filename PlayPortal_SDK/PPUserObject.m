@@ -17,12 +17,7 @@
         [[PPManager sharedInstance].PPuserobj setValue:[d objectForKey:key] forKey:key];
     }
     // create user's private data storage
-    NSString* bundledappname = [NSString stringWithString:[[NSBundle mainBundle] bundleIdentifier]];
-    NSArray* words = [bundledappname componentsSeparatedByString:@"."];
-    NSString* appname = [words lastObject];
-    
-//    [PPManager sharedInstance].PPuserobj.myDataStorage = [NSString stringWithFormat:@"%@-%@", [[NSBundle mainBundle] bundleIdentifier], [PPManager sharedInstance].PPuserobj.handle];
-        [PPManager sharedInstance].PPuserobj.myDataStorage = [NSString stringWithFormat:@"%@@%@", [PPManager sharedInstance].PPuserobj.handle, appname];
+    [PPManager sharedInstance].PPuserobj.myDataStorage = [NSString stringWithFormat:@"%@@%@", [PPManager sharedInstance].PPuserobj.handle, [[[NSString stringWithString:[[NSBundle mainBundle] bundleIdentifier]] componentsSeparatedByString:@"."] lastObject]];
 }
 
 @end
