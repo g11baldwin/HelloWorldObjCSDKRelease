@@ -23,3 +23,4 @@ xcuserdata/
 *.ipa
 *.dSYM.zip
 *.dSYM
+/HelloWorld/Assets.xcassets/Mickey.imageset

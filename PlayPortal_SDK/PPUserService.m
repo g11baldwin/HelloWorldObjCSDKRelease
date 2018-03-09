@@ -7,6 +7,7 @@
 //
 
 #import "PPUserService.h"
+#import "PPDataService.h"
 #import "PPManager.h"
 #import "AFNetworking.h"
 #import <SafariServices/SafariServices.h>
@@ -56,35 +57,74 @@
 	[[PPManager sharedInstance] logout];
 }
 
-
-// return full user profile (if unable to get latest, provide a cached version if it exists)
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
+    [self dismissSafari];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
-		NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
-		[self dismissSafari];
-		self.addUserListener(user, NULL);
+        NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+        [[PPManager sharedInstance].PPuserobj inflateWith:user];
+
+        // attempt to create / open this user's private data storage
+        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
+            if(error) {
+                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+            }
+        }];
+        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        if(_userDictionary == nil) {
-			[self dismissSafari];
-			self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+        if([PPManager sharedInstance].PPuserobj == nil) {
+            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
         } else {
-			[self dismissSafari];
-			self.addUserListener(_userDictionary, NULL);
+            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         }
     }];
 }
+
+- (UIImage*)getProfilePic
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+    
+    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    UIImage *image = [UIImage imageWithData:imageData];
+
+    return image;
+}
+- (UIImage*)getCoverPic
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+    
+    // TODO: replace deprecated
+    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    return image;
+}
+
 - (NSString*)getMyId
 {
     return (_userDictionary != nil) ? [_userDictionary valueForKey:@"userId"] : @"0";
 }
+
 - (NSString*)getMyUsername
 {
-    return (_userDictionary != nil) ? [_userDictionary valueForKey:@"handle"] : @"unknown";
+    return (_userDictionary != nil) ? [[PPManager sharedInstance].PPuserobj valueForKey:@"handle"] : @"unknown";
 }
+
 -(void)dismissSafari
 {
 	UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;

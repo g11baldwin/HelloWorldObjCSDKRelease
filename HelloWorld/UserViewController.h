@@ -2,16 +2,15 @@
 //  UserViewController.h
 //  HelloWorld
 //
-//  Created by blackCloud on 3/6/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Created by JettBlack on 3/6/18.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import "PPUserObject.h"
 
 @interface UserViewController : UIViewController
 
-@property (readwrite, nonatomic, copy) NSString *firstName;
-@property (readwrite, nonatomic, copy) NSString *handle;
-@property (readwrite, nonatomic, copy) NSString *userId;
+@property (readwrite, nonatomic) PPUserObject *user;
 
 @end

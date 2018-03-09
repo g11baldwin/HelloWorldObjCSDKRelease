@@ -11,6 +11,7 @@
 
 #import "PPManager.h"
 #import "AFNetworking.h"
+#import "AFImageDownloader.h"
 
 @interface PPManager()
 
@@ -35,6 +36,7 @@
         _sharedInstance.apiOauthBase = [NSMutableString stringWithString:@"https://sandbox.iokids.net/oauth"];
         _sharedInstance.PPusersvc = [[PPUserService alloc] init];
         _sharedInstance.PPdatasvc = [[PPDataService alloc] init];
+        _sharedInstance.PPuserobj = [[PPUserObject alloc] init];
     });
     return _sharedInstance;
 }
@@ -47,6 +49,8 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [manager.requestSerializer setValue:btoken forHTTPHeaderField:@"Authorization"];
+//    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
+
     return manager;
 }
 
