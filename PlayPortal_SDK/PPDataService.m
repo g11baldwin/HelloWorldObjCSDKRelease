@@ -83,13 +83,15 @@
     }
 }
 
-// Read a single KV pair
+// Read a single KV pair from storage. Returns a dictionary containing a single pair.
+// Example: d = { thekey:thevalue };
+// NB: "thevalue" could contain a serialized structure, e.g. d = { thekey: {firstpart: firstvalue, nextkey: nextvalue}};
 -(void)readBucket:(NSString*)bucketName andKey:(NSString*)key handler:(void(^)(NSDictionary* d, NSError* error))handler
 {
     if(bucketName && key) {
         NSString *urlString = [NSString stringWithFormat:@"%@/%@%@%@%@%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket", @"?id=", bucketName, @"&key=", key];
         [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-            handler([[NSMutableDictionary alloc]initWithDictionary:responseObject], NULL);
+            handler([[NSMutableDictionary alloc]initWithDictionary:[responseObject valueForKeyPath:@"data"]], NULL);
         } failure:^(NSURLSessionTask *operation, NSError *error) {
             NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
             handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
@@ -99,7 +101,8 @@
     }
 }
 
-// Read all contents from the bucket
+// Read all contents from the bucket. Returns a dictionary, containing a single element "data", which is also a dictionary containing all the
+// elements in the storage bucket. Example: d = { data: { somekey:somedata, anotherkey:anotherdata}};
 -(void)readAllFromBucket:(NSString*)bucketName handler:(void(^)(NSDictionary *d, NSError *error))handler
 {
     if(bucketName) {

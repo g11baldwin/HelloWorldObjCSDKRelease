@@ -50,8 +50,7 @@
     __block NSInteger last = 0;
     [[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" handler:^(NSDictionary* d, NSError* error) {
         if(d) {
-            NSDictionary* tmp = [d valueForKeyPath:@"data"];
-            NSString* laststr = [tmp valueForKey:@"inctest"];
+            NSString* laststr = [d valueForKey:@"inctest"];
             last = [laststr integerValue];
         } else {
             last = 0;
