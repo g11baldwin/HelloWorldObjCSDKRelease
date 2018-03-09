@@ -17,6 +17,7 @@
 @property (readwrite, nonatomic, copy) NSString* apiUrlBase;
 @property (readwrite, nonatomic, copy) NSString* accessToken;
 
+@property PPUserObject *PPuserobj;
 @property PPUserService *PPusersvc;
 @property PPDataService *PPdatasvc;
 

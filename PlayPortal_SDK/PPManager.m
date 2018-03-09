@@ -36,6 +36,7 @@
         _sharedInstance.apiOauthBase = [NSMutableString stringWithString:@"https://sandbox.iokids.net/oauth"];
         _sharedInstance.PPusersvc = [[PPUserService alloc] init];
         _sharedInstance.PPdatasvc = [[PPDataService alloc] init];
+        _sharedInstance.PPuserobj = [[PPUserObject alloc] init];
     });
     return _sharedInstance;
 }

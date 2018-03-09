@@ -2,8 +2,8 @@
 //  HelloWorldUITests.m
 //  HelloWorldUITests
 //
-//  Created by blackCloud on 3/6/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Created by JettBlack on 3/6/18.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>

@@ -2,13 +2,14 @@
 //  ViewController.m
 //  HelloWorld
 //
-//  Created by blackCloud on 3/6/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Created by JettBlack on 3/6/18.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import "ViewController.h"
 #import "UserViewController.h"
 #import "PPManager.h"
+#import "PPLoginButton.h"
 
 @interface ViewController ()
 
@@ -18,31 +19,40 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[PPManager sharedInstance].PPusersvc.addUserListener = ^(NSDictionary *user, NSError *error){
+	
+	//The callback function you provide will be called with a PPUserObject after a successful login
+    [PPManager sharedInstance].PPusersvc.addUserListener = ^(PPUserObject *user, NSError *error){
+		
 		if (error) {
+			
 			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+			
 		} else {
-			for(id key in user) {
-				NSLog(@"key=%@ value=%@", key, [user objectForKey:key]);
-			}
-			NSString *firstName = [user objectForKey:@"firstName"];
-			NSString *handle = [user objectForKey:@"handle"];
-			NSString *userId = [user objectForKey:@"userId"];
+			
+            //We pass the PPUserObject to the UserViewController for display
 			UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 			UserViewController *vc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-			vc.firstName = firstName;
-			vc.handle = handle;
-			vc.userId = userId;
+            vc.user = user;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
+			
 		}
+		
 	};
+    
+    
+    //PPLoginButton handles all auth flow
+    PPLoginButton *loginButton = [[PPLoginButton alloc] init];
+    loginButton.center = self.view.center;
+    [self.view addSubview:loginButton];
+    
+    //Or you can add a manual call to log a user in
+    //[[PPManager sharedInstance].PPusersvc login];
+    
 }
 
-- (IBAction)login:(id)sender {
-	[[PPManager sharedInstance].PPusersvc login];
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
 }
-
-
 
 @end

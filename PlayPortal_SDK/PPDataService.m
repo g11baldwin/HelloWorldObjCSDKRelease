@@ -12,6 +12,27 @@
 
 @implementation PPDataService
 
+// Either creates a new bucket or joins an existing bucket
+-(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
+{
+    if(bucketName && users && users.count) {
+        // do a GET from the bucketName to see if it exists (or not)
+        [self readAllFromBucket:bucketName handler:^(NSDictionary* d, NSError* error) {
+            if(d) {
+                 NSLog(@"%@ User bucket %@ already exists and is opened: %@", NSStringFromSelector(_cmd), bucketName, error);
+                handler(NULL); // bucket exists
+            } else { // create one
+                [self createBucket:bucketName andUsers:users handler:^(NSError* error) {
+                    if(error) NSLog(@"%@ Error: dang... bucket problems! %@", NSStringFromSelector(_cmd), error);
+                }];
+            }
+        }];
+        
+    } else {
+        handler([NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+    }
+}
+
 // Create a new bucket or join to an existing bucket
 -(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
 {
@@ -120,10 +141,24 @@
 // Deleta all KV pairs from the bucket.
 -(void)emptyBucket:(NSString*)bucketName
 {
-    if(bucketName != nil) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"bucket"];
-        NSURL *url = [NSURL URLWithString:urlString];
-        NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"garybucket-1",@"id", nil ];
+    if(bucketName) {
+        __block NSArray* userlist;
+        [self readBucket:bucketName andKey:@"users" handler: ^(NSDictionary* d, NSError* error) {
+            if(d) userlist = [NSArray arrayWithObjects: [d objectForKey:@"users"], nil]; // get existing bucket user list
+        }];
+        [self deleteBucket:bucketName];
+        [self createBucket:bucketName andUsers:userlist handler:^(NSError* error) {
+            if(error) NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        }];
+    }
+}
+
+// Removes a bucket
+-(void)deleteBucket:(NSString*)bucketName
+{
+    if(bucketName) {
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"]];
+        NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: bucketName,@"id", nil ];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager DELETE:url.absoluteString parameters:parms success:^(NSURLSessionDataTask *task, id responseObject) {
             NSLog(@"%@ responseObject: %@", NSStringFromSelector(_cmd), responseObject);
