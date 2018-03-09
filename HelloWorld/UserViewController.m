@@ -10,6 +10,7 @@
 #import "UserViewController.h"
 #import "PPManager.h"
 #import "PPUserObject.h"
+#import "PPDataService.h"
 
 
 @interface UserViewController ()
@@ -30,8 +31,11 @@
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
     self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic];
     self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic];
-    self.bucketCountLabel.text = @"?";
     
+    [[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" handler:^(NSDictionary* d, NSError* error) {
+        if(d)
+            self.bucketCountLabel.text = [NSString stringWithFormat:@"%ld", d?[[d valueForKey:@"inctest"] integerValue]:0];
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -44,31 +48,18 @@
 	[self dismissViewControllerAnimated:true completion:NULL];
 }
 
-
 - (IBAction)writeBucketTapped:(id)sender
 {
     __block NSInteger last = 0;
     [[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" handler:^(NSDictionary* d, NSError* error) {
-        if(d) {
-            NSString* laststr = [d valueForKey:@"inctest"];
-            last = [laststr integerValue];
-        } else {
-            last = 0;
-        }
-        
-        last++;
+        if(d) last = [[d valueForKey:@"inctest"] integerValue] + 1;
         self.bucketCountLabel.text = [NSString stringWithFormat:@"%ld", last];
-        [[PPManager sharedInstance].PPdatasvc writeBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" andValue:[NSString stringWithFormat:@"%ld", last] push:FALSE handler:^(NSError *error) {
-            if(error) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error: bucket write"
-                                                                message:@"something went wrong..."
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Cancel"
-                                                      otherButtonTitles: nil];
-                [alert show];
-            }
-        }];
+        [[PPManager sharedInstance].PPdatasvc writeBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" andValue:[NSString stringWithFormat:@"%ld", last] push:FALSE handler:^(NSError *error) { }];
     }];
 }
-
+- (IBAction)emptyBucketTapped:(id)sender
+{
+    [[PPManager sharedInstance].PPdatasvc emptyBucket:[PPManager sharedInstance].PPuserobj.myDataStorage handler:^(NSError* error) { }];
+    self.bucketCountLabel.text = [NSString stringWithFormat:@"%d", 0];
+}
 @end

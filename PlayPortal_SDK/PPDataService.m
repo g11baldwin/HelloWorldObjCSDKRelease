@@ -17,9 +17,9 @@
 {
     if(bucketName && users && users.count) {
         // do a GET from the bucketName to see if it exists (or not)
-        [self readAllFromBucket:bucketName handler:^(NSDictionary* d, NSError* error) {
+        [self readBucket:bucketName andKey:nil handler:^(NSDictionary* d, NSError* error) {
             if(d) {
-                 NSLog(@"%@ User bucket %@ already exists and is opened: %@", NSStringFromSelector(_cmd), bucketName, error);
+                NSLog(@"%@ User bucket %@ already exists and is opened: %@", NSStringFromSelector(_cmd), bucketName, error);
                 handler(NULL); // bucket exists
             } else { // create one
                 [self createBucket:bucketName andUsers:users handler:^(NSError* error) {
@@ -83,32 +83,22 @@
     }
 }
 
-// Read a single KV pair from storage. Returns a dictionary containing a single pair.
-// Example: d = { thekey:thevalue };
-// NB: "thevalue" could contain a serialized structure, e.g. d = { thekey: {firstpart: firstvalue, nextkey: nextvalue}};
+// Read either the entire bucket (if Key=nil) - Returns a dictionary containing a data object (that can contain unspecified structure)
+// Read a single KV pair - Returns a dictionary containing a single pair  Ex: d = { thekey:thevalue };
 -(void)readBucket:(NSString*)bucketName andKey:(NSString*)key handler:(void(^)(NSDictionary* d, NSError* error))handler
 {
-    if(bucketName && key) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/%@%@%@%@%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket", @"?id=", bucketName, @"&key=", key];
-        [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-            handler([[NSMutableDictionary alloc]initWithDictionary:[responseObject valueForKeyPath:@"data"]], NULL);
-        } failure:^(NSURLSessionTask *operation, NSError *error) {
-            NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-            handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-        }];
-    } else {
-        handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-    }
-}
-
-// Read all contents from the bucket. Returns a dictionary, containing a single element "data", which is also a dictionary containing all the
-// elements in the storage bucket. Example: d = { data: { somekey:somedata, anotherkey:anotherdata}};
--(void)readAllFromBucket:(NSString*)bucketName handler:(void(^)(NSDictionary *d, NSError *error))handler
-{
+//    if(bucketName && key) {
     if(bucketName) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/%@%@%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket", @"?id=", bucketName];
+
+        NSLog(@"%@ reading from bucket %@", NSStringFromSelector(_cmd), bucketName);
+        NSString *urlString;
+        if(key) {
+            urlString = [NSString stringWithFormat:@"%@/%@%@%@%@%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket", @"?id=", bucketName, @"&key=", key];
+        } else {
+            urlString = [NSString stringWithFormat:@"%@/%@%@%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket", @"?id=", bucketName];
+        }
         [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-            handler([[NSMutableDictionary alloc]initWithDictionary:responseObject], NULL);
+            handler([[NSMutableDictionary alloc]initWithDictionary:key?[responseObject valueForKeyPath:@"data"]:responseObject], NULL);
         } failure:^(NSURLSessionTask *operation, NSError *error) {
             NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
             handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
@@ -118,7 +108,7 @@
     }
 }
 
-// Deleta a KV pair from the bucket (by writing a K:NULL pair)
+// Deleta KV pair from the bucket (by writing a K:NULL pair)
 -(void)deleteFromBucket:(NSString*)bucketName andKey:(NSString*)key
 {
     if(bucketName && key) {
@@ -142,34 +132,66 @@
 }
 
 // Deleta all KV pairs from the bucket.
--(void)emptyBucket:(NSString*)bucketName
+-(void)emptyBucket:(NSString*)bucketName handler:(void(^)(NSError *error))handler
 {
     if(bucketName) {
-        __block NSArray* userlist;
-        [self readBucket:bucketName andKey:@"users" handler: ^(NSDictionary* d, NSError* error) {
-            if(d) userlist = [NSArray arrayWithObjects: [d objectForKey:@"users"], nil]; // get existing bucket user list
-        }];
-        [self deleteBucket:bucketName];
-        [self createBucket:bucketName andUsers:userlist handler:^(NSError* error) {
-            if(error) NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        __block NSMutableArray* userlist = [[NSMutableArray alloc] init];
+        [self readBucket:bucketName andKey:nil handler: ^(NSDictionary* d, NSError* error) {
+            for (NSArray *object in [d objectForKey:@"users"]) {
+                [userlist addObject:object];
+            }
+            
+            [self deleteBucket:bucketName handler: ^(NSError* error) {
+                if(!error) {
+                    [self createBucket:bucketName andUsers:userlist handler:^(NSError* error) {
+                        if(error) NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+                        handler(NULL);
+                    }];
+                } else {
+                    handler(NULL);
+                }
+            }];
         }];
     }
 }
 
 // Removes a bucket
--(void)deleteBucket:(NSString*)bucketName
+-(void)deleteBucket:(NSString*)bucketName handler:(void(^)(NSError *error))handler
 {
     if(bucketName) {
-        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"]];
-        NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: bucketName,@"id", nil ];
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager DELETE:url.absoluteString parameters:parms success:^(NSURLSessionDataTask *task, id responseObject) {
-            NSLog(@"%@ responseObject: %@", NSStringFromSelector(_cmd), responseObject);
-        } failure:^(NSURLSessionTask *operation, NSError *error) {
-            NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        }];
+        /*
+         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"]];
+         NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys: bucketName,@"id", nil ];
+         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+         [manager DELETE:url.absoluteString parameters:parms success:^(NSURLSessionDataTask *task, id responseObject) {
+         NSLog(@"%@ responseObject: %@", NSStringFromSelector(_cmd), responseObject);
+         } failure:^(NSURLSessionTask *operation, NSError *error) {
+         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+         }];
+         */
+        
+        
+        NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"];
+        NSDictionary *body = @{@"id":bucketName, @"access_token": [[PPManager sharedInstance] getAccessToken]};
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        NSMutableURLRequest *req = [PPManager buildAFRequestForBodyParms: @"DELETE" andUrlString:urlString];
+        [req setHTTPBody:[jsonString dataUsingEncoding:NSUTF8StringEncoding]];
+        [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+            if (!error) {
+                NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
+                handler(NULL);
+            } else {
+                NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
+                handler(error);
+            }
+        }] resume];
     }
 }
+
 
 // Register a callback function that is invoked on bucket content changes.
 -(void)registerForBucketContentChanges:(NSString*)bucketName callback:(void(^)(NSDictionary* d))callback
