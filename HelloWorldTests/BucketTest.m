@@ -30,6 +30,7 @@
 - (void)testBucketCreate {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
+    /*
     __block NSInteger startingIndex;
     
     NSLog(@"XCT testing : %S", __PRETTY_FUNCTION__);
@@ -56,6 +57,7 @@
     [[PPManager sharedInstance].PPdatasvc writeBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:@"lasttestkey" andValue:[NSString stringWithFormat:@"%ld", startingIndex+10] push:FALSE handler:^(NSError *error) {
         if(error) NSLog(@"XCT writeBucket ERROR KV %@:%@", @"lasttestkey", [NSString stringWithFormat:@"%ld", startingIndex+10]);
     }];
+*/
 }
     /*
  - (void)testPerformanceExample {

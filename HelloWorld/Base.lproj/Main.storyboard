@@ -101,6 +101,26 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FWH-p5-FVn">
+                                <rect key="frame" x="37" y="496" width="136" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.77988771136513857" green="0.9317001816188375" blue="1" alpha="0.89577414772727271" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="Bucket write">
+                                    <color key="titleColor" red="0.5" green="0.49599384899999999" blue="0.49400417019999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="writeBucketTapped:" destination="WUA-pr-2om" eventType="touchUpInside" id="tHF-3o-D8W"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2op-5H-wVy">
+                                <rect key="frame" x="240" y="496" width="96" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.77988771140000002" green="0.93170018160000001" blue="1" alpha="0.89577414769999997" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="22"/>
+                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -122,6 +142,7 @@
                         <viewLayoutGuide key="safeArea" id="TBk-cX-6t0"/>
                     </view>
                     <connections>
+                        <outlet property="bucketCountLabel" destination="2op-5H-wVy" id="3Sk-MR-UC2"/>
                         <outlet property="coverPhotoImageView" destination="JLp-HG-sdf" id="xyk-Jh-Pgx"/>
                         <outlet property="handleLabel" destination="BCD-Dc-ohj" id="CNL-1S-4kD"/>
                         <outlet property="nameLabel" destination="UNC-7U-zhF" id="g1V-38-NeP"/>
