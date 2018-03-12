@@ -29,8 +29,8 @@
     [super viewDidLoad];
     self.handleLabel.text = self.user.handle;
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
-    self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic];
-    self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic];
+    self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic:self.user.userId];
+    self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic:self.user.userId];
 
     [[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" handler:^(NSDictionary* d, NSError* error) {
         if(d)

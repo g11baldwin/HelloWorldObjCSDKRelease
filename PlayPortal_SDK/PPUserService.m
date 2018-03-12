@@ -97,10 +97,14 @@
         }
     }];
 }
-
-- (UIImage*)getProfilePic
+- (UIImage*)getProfilePic:(NSString*)userIdOrimageId
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    NSString* urlString;
+    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    } else {
+            urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+    }
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -113,9 +117,15 @@
     
     return image;
 }
-- (UIImage*)getCoverPic
+- (UIImage*)getCoverPic:(NSString*)userIdOrimageId
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    NSString* urlString;
+    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    } else {
+        urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+    }
+   
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

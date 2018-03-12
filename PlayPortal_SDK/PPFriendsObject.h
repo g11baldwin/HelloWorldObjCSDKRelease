@@ -12,5 +12,7 @@
 @property NSMutableArray *myFriends;
 
 - (void)inflateFriendsList:(NSMutableArray*)a;
-
+- (NSInteger)getFriendsCount;
+- (UIImage*)getFriendsProfilePic:(NSString*)friendId;
+- (UIImage*)getFriendsCoverPic:(NSString*)friendId;
 @end

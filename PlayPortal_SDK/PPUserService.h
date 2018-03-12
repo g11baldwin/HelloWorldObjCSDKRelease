@@ -17,8 +17,8 @@
 - (void)login;
 - (void)logout;
 - (void)getProfile: (void(^)(NSError *error))handler;
-- (UIImage*)getProfilePic;
-- (UIImage*)getCoverPic;
+- (UIImage*)getProfilePic:(NSString*)userId;
+- (UIImage*)getCoverPic:(NSString*)userId;
 - (NSString*)getMyId;
 - (NSString*)getMyUsername;
 - (void)getFriendsProfiles: (void(^)(NSError *error))handler;
