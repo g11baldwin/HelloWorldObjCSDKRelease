@@ -5,7 +5,9 @@
 //  Created by Gary J. Baldwin on 3/4/18.
 //  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
-
+// The data service provides methods for:
+// - managing storage of arbitrary data (create/read/write/delete storage buckets)
+// - getting stored images (jpeg)
 #import "PPManager.h"
 #import "PPDataService.h"
 #import "AFNetworking.h"
@@ -197,6 +199,25 @@
 -(void)registerForBucketContentChanges:(NSString*)bucketName callback:(void(^)(NSDictionary* d))callback
 {
     callback([NSMutableDictionary dictionaryWithObjectsAndKeys:[NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:99 userInfo:NULL], @"error", nil]);
+}
+
+
+-(UIImage*) getImage:(NSString*) imageId
+{
+    if(!imageId) return NULL;
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", imageId];
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+    
+    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    return image;
 }
 
 @end

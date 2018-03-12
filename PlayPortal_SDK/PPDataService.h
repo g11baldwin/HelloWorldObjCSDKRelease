@@ -19,6 +19,9 @@
 -(void)emptyBucket:(NSString*)bucketName handler:(void(^)(NSError *error))handler;
 -(void)registerForBucketContentChanges:(NSString*)bucketName callback:(void(^)(NSDictionary* d))callback;
 
+// image methods
+-(UIImage*) getImage:(NSString*) imageId;
+
 @end
 
 
