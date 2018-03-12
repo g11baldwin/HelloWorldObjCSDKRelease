@@ -37,6 +37,7 @@
         _sharedInstance.PPusersvc = [[PPUserService alloc] init];
         _sharedInstance.PPdatasvc = [[PPDataService alloc] init];
         _sharedInstance.PPuserobj = [[PPUserObject alloc] init];
+        _sharedInstance.PPfriendsobj = [[PPFriendsObject alloc] init];
     });
     return _sharedInstance;
 }
@@ -49,8 +50,8 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [manager.requestSerializer setValue:btoken forHTTPHeaderField:@"Authorization"];
-//    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
-
+    //    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
+    
     return manager;
 }
 
@@ -71,12 +72,12 @@
 - (void)configure:(NSString *)clientId secret:(NSString*)secret andRedirectURI:(NSString*)redirectURI
 {
     if(!clientId || !secret || !redirectURI) {
-		NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), @"Please provide a clientId, clientSecret & redirectURI.");
+        NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), @"Please provide a clientId, clientSecret & redirectURI.");
     } else {
-		[PPManager sharedInstance].clientId = clientId;
-		[PPManager sharedInstance].clientSecret = secret;
-		[PPManager sharedInstance].redirectURI = redirectURI;
-		[PPManager sharedInstance].managerStatus = PPStatusConfigured;
+        [PPManager sharedInstance].clientId = clientId;
+        [PPManager sharedInstance].clientSecret = secret;
+        [PPManager sharedInstance].redirectURI = redirectURI;
+        [PPManager sharedInstance].managerStatus = PPStatusConfigured;
     }
 }
 
@@ -89,22 +90,32 @@
     if(strs.count >= 3) {
         NSArray *substrs = [strs[1] componentsSeparatedByString:@"&"];
         [PPManager sharedInstance].authCode = substrs[0];
-		[[PPManager sharedInstance] getInitialToken:^(NSError *error){
-			if (error) {
-				NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
-			} else {
-				[[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error){
-					if (error) {
-						NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
-					}
-					UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-					while (topController.presentedViewController) {
-						topController = topController.presentedViewController;
-					}
-					[topController dismissViewControllerAnimated:true completion:NULL];
-				}];
-			}
-		}];
+        [[PPManager sharedInstance] getInitialToken:^(NSError *error){
+            if (error) {
+                NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+            } else {
+                [[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error){
+                    if (error) {
+                        NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+                    }
+                    
+                    // attempt to create / open this user's private data storage
+                    [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
+                        if(error) {
+                            NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+                        }
+                    }];
+
+/*
+                    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+                    while (topController.presentedViewController) {
+                        topController = topController.presentedViewController;
+                    }
+                    [topController dismissViewControllerAnimated:true completion:NULL];
+*/
+                }];
+            }
+        }];
     }
 }
 
@@ -128,10 +139,10 @@
         [PPManager sharedInstance].tokenType = [responseObject objectForKey:@"token_type"];
         [PPManager sharedInstance].expirationTime = [[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"] ? [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 23)] : [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 1)];
         [PPManager sharedInstance].managerStatus = PPStatusOnline;
-		handler(NULL);
+        handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-		handler(error);
+        handler(error);
     }];
 }
 

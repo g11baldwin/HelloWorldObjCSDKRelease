@@ -19,6 +19,7 @@
 
 @property PPUserObject *PPuserobj;
 @property PPUserService *PPusersvc;
+@property PPFriendsObject *PPfriendsobj;
 @property PPDataService *PPdatasvc;
 
 typedef NS_ENUM(NSInteger, PPManagerStatus) {
@@ -28,7 +29,7 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
     PPStatusRefreshing = 2,
 };
 
-@property PPManagerStatus* managerStatus;
+@property PPManagerStatus managerStatus;
 @property (readwrite, nonatomic, copy) NSString* clientId;
 @property (readwrite, nonatomic, copy) NSString* clientSecret;
 @property (readwrite, nonatomic, copy) NSString* redirectURI;
