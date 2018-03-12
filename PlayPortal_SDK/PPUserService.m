@@ -65,14 +65,28 @@
         _userDictionary = responseObject;
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
-
-        // attempt to create / open this user's private data storage
-        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
-            if(error) {
-                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
-            }
-        }];
         self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+        handler(NULL);
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        if([PPManager sharedInstance].PPuserobj == nil) {
+            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+            handler(error);
+        } else {
+            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+            handler(NULL);
+        }
+    }];
+}
+
+- (void)getFriendsProfiles: (void(^)(NSError *error))handler
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/friends"];
+    [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        _userDictionary = responseObject;
+        NSDictionary *myfriends = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+        [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
+        
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         if([PPManager sharedInstance].PPuserobj == nil) {
@@ -95,7 +109,7 @@
     
     NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
     UIImage *image = [UIImage imageWithData:imageData];
-
+    
     return image;
 }
 - (UIImage*)getCoverPic
@@ -127,13 +141,13 @@
 
 -(void)dismissSafari
 {
-	UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-	while (topController.presentedViewController) {
-		topController = topController.presentedViewController;
-	}
-	if (topController == _svc) {
-		[_svc dismissViewControllerAnimated:true completion:NULL];
-	}
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    if (topController == _svc) {
+        [_svc dismissViewControllerAnimated:true completion:NULL];
+    }
 }
 
 @end
