@@ -79,22 +79,16 @@
     }];
 }
 
-- (void)getFriendsProfiles: (void(^)(NSError *error))handler
+- (void)getFriendsProfiles:(void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/friends"];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        _userDictionary = responseObject;
-//        NSDictionary *myfriends = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
-        NSArray *myfriends = [NSArray arrayWithObjects:responseObject, nil];
+        NSMutableArray *myfriends = [NSArray arrayWithObjects:responseObject, nil];
         [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
-        
+         handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        if([PPManager sharedInstance].PPuserobj == nil) {
-            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-        } else {
-            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
-        }
+        handler(error);
     }];
 }
 - (UIImage*)getProfilePic:(NSString*)userIdOrimageId
@@ -149,6 +143,21 @@
 {
     return (_userDictionary != nil) ? [[PPManager sharedInstance].PPuserobj valueForKey:@"handle"] : @"unknown";
 }
+
+- (void)searchForUsers:(NSString*)matchingString handler:(void(^)(NSArray* matchingUsers, NSError *error))handler
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@?term=%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/search", matchingString];
+    [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSArray *usersMatchingSearch = [NSArray arrayWithObjects:responseObject, nil];
+        handler(usersMatchingSearch, NULL);
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        handler(NULL, error);
+    }];
+}
+
+
+
 
 -(void)dismissSafari
 {

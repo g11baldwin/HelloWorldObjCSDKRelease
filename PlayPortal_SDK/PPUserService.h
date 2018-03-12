@@ -23,4 +23,5 @@
 - (NSString*)getMyUsername;
 - (void)getFriendsProfiles: (void(^)(NSError *error))handler;
 
+- (void)searchForUsers:(NSString*)matchingString handler:(void(^)(NSArray* matchingUsers, NSError* error))handler;
 @end
