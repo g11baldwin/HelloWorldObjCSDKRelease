@@ -18,6 +18,7 @@
 @property NSString* country;
 @property NSString* accountType;
 @property NSString* userType;
+@property NSDictionary* parentFlags;
 @property NSString* profilePicId;
 @property UIImage* profilePic;
 @property NSString* coverPhotoId;
