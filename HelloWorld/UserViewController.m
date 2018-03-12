@@ -66,6 +66,7 @@
 - (IBAction)getFriendsTapped:(id)sender
 {
     [[PPManager sharedInstance].PPusersvc getFriendsProfiles:^(NSError *error) {
+            NSLog(@"%@ getFriendsTapped: %@", NSStringFromSelector(_cmd), @" fetching friends list from server or cache");
         if (error) {
             NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
         }
