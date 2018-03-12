@@ -31,12 +31,12 @@
     self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
     self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic];
     self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic];
-    
+
     [[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"inctest" handler:^(NSDictionary* d, NSError* error) {
         if(d)
             self.bucketCountLabel.text = [NSString stringWithFormat:@"%ld", d?[[d valueForKey:@"inctest"] integerValue]:0];
     }];
-}
+ }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -62,4 +62,14 @@
     [[PPManager sharedInstance].PPdatasvc emptyBucket:[PPManager sharedInstance].PPuserobj.myDataStorage handler:^(NSError* error) { }];
     self.bucketCountLabel.text = [NSString stringWithFormat:@"%d", 0];
 }
+
+- (IBAction)getFriendsTapped:(id)sender
+{
+    [[PPManager sharedInstance].PPusersvc getFriendsProfiles:^(NSError *error) {
+        if (error) {
+            NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+        }
+    }];
+}
+
 @end
