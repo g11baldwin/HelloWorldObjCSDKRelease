@@ -11,6 +11,6 @@
 @interface PPFriendsObject : PPUserObject
 @property NSMutableArray *myFriends;
 
-- (void)inflateFriendsList:(NSDictionary*)d;
+- (void)inflateFriendsList:(NSMutableArray*)a;
 
 @end

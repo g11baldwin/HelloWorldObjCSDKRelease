@@ -10,16 +10,10 @@
 
 @implementation PPFriendsObject
 
-- (void)inflateFriendsList:(NSDictionary*) d
+- (void)inflateFriendsList:(NSMutableArray*) a
 {
-    NSMutableArray* a;
-    if(d) {
-        NSLog(@"%@ friends dictionary: %@", NSStringFromSelector(_cmd), d);
-        a = [d objectForKey:@"FriendsList"];
-        if(a) {
-            NSLog(@"%@ friends array: %@", NSStringFromSelector(_cmd), a);
-        }
-    }
+    _myFriends = a;
+    NSLog(@"%@ myFriends array: %@", NSStringFromSelector(_cmd), _myFriends);
 }
 
 @end

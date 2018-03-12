@@ -84,7 +84,8 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/friends"];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
-        NSDictionary *myfriends = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+//        NSDictionary *myfriends = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+        NSArray *myfriends = [NSArray arrayWithObjects:responseObject, nil];
         [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
         
     } failure:^(NSURLSessionTask *operation, NSError *error) {
