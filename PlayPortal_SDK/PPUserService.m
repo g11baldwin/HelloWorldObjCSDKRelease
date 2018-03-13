@@ -26,9 +26,12 @@
 		[self dismissSafari];
 		self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
 	} else if([[PPManager sharedInstance] isAuthenticated]) {
-		NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
-		[self dismissSafari];
-		self.addUserListener(user, NULL);
+        [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
+            [self dismissSafari];
+//            NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
+//            [[PPManager sharedInstance].PPuserobj inflateWith:user];
+            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+        }];
     } else {
 		NSString* pre = @"https://sandbox.iokids.net/oauth/signin?client_id=";
 		NSString* cid = [PPManager sharedInstance].clientId;
@@ -91,6 +94,7 @@
         handler(error);
     }];
 }
+
 - (UIImage*)getProfilePic:(NSString*)userIdOrimageId
 {
     NSString* urlString;
@@ -111,6 +115,7 @@
     
     return image;
 }
+
 - (UIImage*)getCoverPic:(NSString*)userIdOrimageId
 {
     NSString* urlString;
@@ -155,7 +160,6 @@
         handler(NULL, error);
     }];
 }
-
 
 
 

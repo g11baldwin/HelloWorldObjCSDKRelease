@@ -1,3 +1,4 @@
+
 //
 //  ViewController.m
 //  HelloWorld
@@ -29,15 +30,15 @@
             vc.user = user;
 			vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:vc animated:YES completion:NULL];
+
 		}
 	};
-    
-    
+
     //PPLoginButton handles all auth flow
     PPLoginButton *loginButton = [[PPLoginButton alloc] init];
     loginButton.center = self.view.center;
     [self.view addSubview:loginButton];
-    
+
     //Or you can add a manual call to log a user in
     //[[PPManager sharedInstance].PPusersvc login];
     

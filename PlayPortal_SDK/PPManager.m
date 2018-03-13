@@ -12,6 +12,8 @@
 #import "PPManager.h"
 #import "AFNetworking.h"
 #import "AFImageDownloader.h"
+#import "PDKeychainBindingsController.h"
+
 
 @interface PPManager()
 
@@ -50,8 +52,6 @@
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
     [manager.requestSerializer setValue:btoken forHTTPHeaderField:@"Authorization"];
-    //    manager.responseSerializer.acceptableContentTypes = [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
-    
     return manager;
 }
 
@@ -80,16 +80,33 @@
         [PPManager sharedInstance].managerStatus = PPStatusConfigured;
     }
 }
-
+- (void)getProfileAndBucket:(void(^)(NSError *error))handler
+{
+    [[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error){
+        if (error) {
+            NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+        }
+        
+        // attempt to create / open this user's private data storage
+        NSLog(@"%@ userObj:%@", NSStringFromSelector(_cmd), [PPManager sharedInstance].PPuserobj.userId);
+        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
+            if(error) {
+                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+            }
+            handler(error);
+        }];
+    }];
+}
+     
 // After SSO, redirect sends app here to begin
 - (void)handleOpenURL:(NSURL *)url
 {
-#pragma FIXME // add check for URI redirect content
-    
     NSArray *strs = [url.absoluteString componentsSeparatedByString:@"="];
     if(strs.count >= 3) {
         NSArray *substrs = [strs[1] componentsSeparatedByString:@"&"];
         [PPManager sharedInstance].authCode = substrs[0];
+        [[PDKeychainBindings sharedKeychainBindings] setObject:_authCode forKey:@"auth_code"];  // save auth_code in keychain
+
         [[PPManager sharedInstance] getInitialToken:^(NSError *error){
             if (error) {
                 NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
@@ -125,20 +142,22 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiOauthBase, @"token"];
     NSURL *url = [NSURL URLWithString:urlString];
     NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                           @"authorization_code",@"grant_type",
-                           [PPManager sharedInstance].authCode,@"code",
                            [PPManager sharedInstance].redirectURI,@"redirect_uri",
                            [PPManager sharedInstance].clientId,@"client_id",
                            [PPManager sharedInstance].clientSecret,@"client_secret",
+                           @"authorization_code",@"grant_type",
+                           [PPManager sharedInstance].authCode,@"code",
                            nil ];
+    NSLog(@"parms: %@", parms);
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager POST:url.absoluteString parameters:parms progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSLog(@"%@  responseObject: %@", NSStringFromSelector(_cmd), responseObject);
         [PPManager sharedInstance].refreshToken = [responseObject objectForKey:@"refresh_token"];
         [PPManager sharedInstance].accessToken = [responseObject objectForKey:@"access_token"];
         [PPManager sharedInstance].tokenType = [responseObject objectForKey:@"token_type"];
-        [PPManager sharedInstance].expirationTime = [[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"] ? [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 23)] : [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 1)];
+        [PPManager sharedInstance].expirationTime = [[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"] ? [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 12)] : [[NSDate alloc] initWithTimeIntervalSinceNow:(1)];  // cause token to renew @ 1/2 expiration period
         [PPManager sharedInstance].managerStatus = PPStatusOnline;
+        [self storeTokensInKeychain];
         handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
@@ -148,6 +167,7 @@
 
 - (void)refreshAccessToken
 {
+    NSLog(@"%@  refreshAccessToken", NSStringFromSelector(_cmd));
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiOauthBase, @"token"];
     NSURL *url = [NSURL URLWithString:urlString];
     NSDictionary *parms = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -162,25 +182,79 @@
         [PPManager sharedInstance].refreshToken = [responseObject objectForKey:@"refresh_token"];
         [PPManager sharedInstance].accessToken = [responseObject objectForKey:@"access_token"];
         [PPManager sharedInstance].tokenType = [responseObject objectForKey:@"token_type"];
-        [PPManager sharedInstance].expirationTime = [[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"] ? [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 23)] : [[NSDate alloc] initWithTimeIntervalSinceNow:(3600 * 1)];
+        NSInteger delta = 10000000;
+        if([[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"]) {
+            delta = 3600 * 11;
+        }
+        [PPManager sharedInstance].expirationTime = [[NSDate alloc] initWithTimeIntervalSinceNow:delta];
+
+        [self storeTokensInKeychain];  // update keychain
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
     }];
 }
 
-#pragma FIXME // move tokens to keychain
+- (void)storeTokensInKeychain
+{
+    [[PDKeychainBindings sharedKeychainBindings] setObject:_refreshToken forKey:@"refresh_token"];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:_accessToken forKey:@"access_token"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
+    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
+}
+
+
 - (BOOL)isAuthenticated
 {
-    if(([PPManager sharedInstance].refreshToken == nil) || ([PPManager sharedInstance].accessToken == nil)) {
-        return FALSE;
+    NSString* rt = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"refresh_token"];
+    NSString* at = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"access_token"];
+    NSString* et = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"];
+    NSString* ac = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"auth_code"];
+    NSLog(@"%@ keychain parms: rt:%@  at:%@  et:%@  ac:%@", NSStringFromSelector(_cmd), rt, at, et, ac);
+    if(!rt || !at || !et || !ac) {
+        [[PPManager sharedInstance] getInitialToken:^(NSError *error){
+            if (error) {
+                NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+            }
+        }];
     } else {
-        [[PPManager sharedInstance] refreshAccessToken];
-        return TRUE;
+        _refreshToken = rt;
+        _accessToken = at;
+        _authCode = ac;
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
+        NSDate *dateFromString = [dateFormatter dateFromString:et];
+        _expirationTime = dateFromString;
+        
+        if([[NSDate date] compare: dateFromString]) {
+            return TRUE;
+        } else {
+            [[PPManager sharedInstance] refreshAccessToken];
+            return FALSE;
+        }
     }
+    return FALSE;
 }
+         
 -(void)logout {
-	[PPManager sharedInstance].refreshToken = NULL;
-	[PPManager sharedInstance].accessToken = NULL;
+    [PPManager sharedInstance].refreshToken = NULL;
+    [PPManager sharedInstance].accessToken = NULL;
+    
+    // invalidate token info in keychain by setting expiration time==now()
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
+    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"auth_code"];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"access_token"];
+    
+}
+
+
+- (void)initKeychain
+{
+    
 }
 
 
