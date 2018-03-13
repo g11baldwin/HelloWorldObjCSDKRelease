@@ -35,6 +35,11 @@
 		0353101D204F5AC9002D9244 /* AFAutoPurgingImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531013204F5AC9002D9244 /* AFAutoPurgingImageCache.m */; };
 		0353101E204F5AC9002D9244 /* AFImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531015204F5AC9002D9244 /* AFImageDownloader.m */; };
 		03531021204F86AE002D9244 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03531020204F86AE002D9244 /* UserViewController.m */; };
+		46387C932056E8D80013DEC1 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 46387C652056E8D80013DEC1 /* LICENSE */; };
+		46387C942056E8D80013DEC1 /* PDKeychainBindingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46387C672056E8D80013DEC1 /* PDKeychainBindingsController.m */; };
+		46387C952056E8D80013DEC1 /* PDKeychainBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 46387C6A2056E8D80013DEC1 /* PDKeychainBindings.m */; };
+		46387C962056E8D80013DEC1 /* PDKeychainBindingsController.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 46387C6B2056E8D80013DEC1 /* PDKeychainBindingsController.podspec */; };
+		46387C9A2056E8D80013DEC1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 46387C742056E8D80013DEC1 /* README.md */; };
 		4696753B20531B6D00B84CEB /* PPFriendsObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4696753A20531B6D00B84CEB /* PPFriendsObject.m */; };
 		46AB80DA2051E6C50074DF5B /* BucketTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AB80D92051E6C50074DF5B /* BucketTest.m */; };
 		46BD345920509A8400001F28 /* PPUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BD345720509A8400001F28 /* PPUserObject.m */; };
@@ -119,6 +124,13 @@
 		03531015204F5AC9002D9244 /* AFImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageDownloader.m; sourceTree = "<group>"; };
 		0353101F204F86AE002D9244 /* UserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
 		03531020204F86AE002D9244 /* UserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
+		46387C652056E8D80013DEC1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		46387C672056E8D80013DEC1 /* PDKeychainBindingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDKeychainBindingsController.m; sourceTree = "<group>"; };
+		46387C682056E8D80013DEC1 /* PDKeychainBindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDKeychainBindings.h; sourceTree = "<group>"; };
+		46387C692056E8D80013DEC1 /* PDKeychainBindingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDKeychainBindingsController.h; sourceTree = "<group>"; };
+		46387C6A2056E8D80013DEC1 /* PDKeychainBindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDKeychainBindings.m; sourceTree = "<group>"; };
+		46387C6B2056E8D80013DEC1 /* PDKeychainBindingsController.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PDKeychainBindingsController.podspec; sourceTree = "<group>"; };
+		46387C742056E8D80013DEC1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4696753920531B6D00B84CEB /* PPFriendsObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPFriendsObject.h; sourceTree = "<group>"; };
 		4696753A20531B6D00B84CEB /* PPFriendsObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPFriendsObject.m; sourceTree = "<group>"; };
 		46AB80D92051E6C50074DF5B /* BucketTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BucketTest.m; sourceTree = "<group>"; };
@@ -217,6 +229,7 @@
 		03530FE0204F5A1B002D9244 /* PlayPortal_SDK */ = {
 			isa = PBXGroup;
 			children = (
+				46387C602056E8D80013DEC1 /* PDKeychainBindingsController-master */,
 				4696753920531B6D00B84CEB /* PPFriendsObject.h */,
 				4696753A20531B6D00B84CEB /* PPFriendsObject.m */,
 				46BD345820509A8400001F28 /* PPUserObject.h */,
@@ -281,6 +294,28 @@
 				03531015204F5AC9002D9244 /* AFImageDownloader.m */,
 			);
 			path = "UIKit+AFNetworking";
+			sourceTree = "<group>";
+		};
+		46387C602056E8D80013DEC1 /* PDKeychainBindingsController-master */ = {
+			isa = PBXGroup;
+			children = (
+				46387C652056E8D80013DEC1 /* LICENSE */,
+				46387C662056E8D80013DEC1 /* PDKeychainBindingsController */,
+				46387C6B2056E8D80013DEC1 /* PDKeychainBindingsController.podspec */,
+				46387C742056E8D80013DEC1 /* README.md */,
+			);
+			path = "PDKeychainBindingsController-master";
+			sourceTree = "<group>";
+		};
+		46387C662056E8D80013DEC1 /* PDKeychainBindingsController */ = {
+			isa = PBXGroup;
+			children = (
+				46387C672056E8D80013DEC1 /* PDKeychainBindingsController.m */,
+				46387C682056E8D80013DEC1 /* PDKeychainBindings.h */,
+				46387C692056E8D80013DEC1 /* PDKeychainBindingsController.h */,
+				46387C6A2056E8D80013DEC1 /* PDKeychainBindings.m */,
+			);
+			path = PDKeychainBindingsController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -389,11 +424,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46387C932056E8D80013DEC1 /* LICENSE in Resources */,
 				03530FEB204F5A1B002D9244 /* Info.plist in Resources */,
+				46387C9A2056E8D80013DEC1 /* README.md in Resources */,
 				03530FBB204F58A7002D9244 /* LaunchScreen.storyboard in Resources */,
 				03530FB8204F58A7002D9244 /* Assets.xcassets in Resources */,
 				03530FB6204F58A7002D9244 /* Main.storyboard in Resources */,
 				50E8ADDC2050987B00E62D6F /* Assets.xcassets in Resources */,
+				46387C962056E8D80013DEC1 /* PDKeychainBindingsController.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +469,7 @@
 				03530FFB204F5A22002D9244 /* AFURLResponseSerialization.m in Sources */,
 				03531017204F5AC9002D9244 /* UIRefreshControl+AFNetworking.m in Sources */,
 				0353101E204F5AC9002D9244 /* AFImageDownloader.m in Sources */,
+				46387C942056E8D80013DEC1 /* PDKeychainBindingsController.m in Sources */,
 				03530FFE204F5A22002D9244 /* AFURLRequestSerialization.m in Sources */,
 				03530FEA204F5A1B002D9244 /* PPDataService.m in Sources */,
 				46BD345920509A8400001F28 /* PPUserObject.m in Sources */,
@@ -438,6 +477,7 @@
 				03530FFF204F5A22002D9244 /* AFNetworkReachabilityManager.m in Sources */,
 				0353101D204F5AC9002D9244 /* AFAutoPurgingImageCache.m in Sources */,
 				0353101C204F5AC9002D9244 /* UIWebView+AFNetworking.m in Sources */,
+				46387C952056E8D80013DEC1 /* PDKeychainBindings.m in Sources */,
 				50E8ADDF20509B9500E62D6F /* PPLoginButton.m in Sources */,
 				03530FFC204F5A22002D9244 /* AFHTTPSessionManager.m in Sources */,
 				03531016204F5AC9002D9244 /* UIProgressView+AFNetworking.m in Sources */,
@@ -546,7 +586,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -595,7 +635,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
