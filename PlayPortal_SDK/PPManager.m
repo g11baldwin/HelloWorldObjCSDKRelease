@@ -200,8 +200,8 @@
         if([[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"]) {
             delta = 3600 * 11;
         }
-        [PPManager sharedInstance].expirationTime = [[NSDate alloc] initWithTimeIntervalSinceNow:delta];
 
+        [PPManager sharedInstance].expirationTime = [[NSDate alloc] initWithTimeIntervalSinceNow:delta];
         [self storeTokensInKeychain];  // update keychain
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
@@ -212,9 +212,12 @@
 {
     [[PDKeychainBindings sharedKeychainBindings] setObject:_refreshToken forKey:@"refresh_token"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:_accessToken forKey:@"access_token"];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
+    
+    NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    NSString *stringDate = [rfc3339DateFormatter stringFromDate:[PPManager sharedInstance].expirationTime];
     [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
 }
 
@@ -236,9 +239,18 @@
         _refreshToken = rt;
         _accessToken = at;
         _authCode = ac;
+        
+        NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+        NSDate* dateFromString;
+        [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+        [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+        [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+        dateFromString = [rfc3339DateFormatter dateFromString:et];
+/*
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
         NSDate *dateFromString = [dateFormatter dateFromString:et];
+*/
         _expirationTime = dateFromString;
         if([[NSDate date] compare: dateFromString] == NSOrderedAscending) { // still have TTL with this token
             return TRUE;
