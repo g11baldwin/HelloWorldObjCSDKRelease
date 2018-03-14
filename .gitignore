@@ -24,3 +24,5 @@ xcuserdata/
 *.dSYM.zip
 *.dSYM
 /HelloWorld/Assets.xcassets/Mickey.imageset
+.DS_Store
+/.DS_Store
