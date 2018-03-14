@@ -71,6 +71,7 @@
         self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         if([PPManager sharedInstance].PPuserobj == nil) {
             self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
@@ -90,6 +91,7 @@
         [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
          handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         handler(error);
     }];
@@ -156,6 +158,7 @@
         NSArray *usersMatchingSearch = [NSArray arrayWithObjects:responseObject, nil];
         handler(usersMatchingSearch, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         handler(NULL, error);
     }];
