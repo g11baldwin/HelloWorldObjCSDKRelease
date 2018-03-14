@@ -52,6 +52,7 @@
             if (!error) {
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
             } else {
+                [PPManager processAFError:error];
                 NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
             }
         }] resume];
@@ -75,7 +76,6 @@
         [req setHTTPBody:[jsonString dataUsingEncoding:NSUTF8StringEncoding]];
         [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
             if (!error) {
-                [PPManager processAFError:error];
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
             } else {
                 [PPManager processAFError:responseObject];
@@ -104,7 +104,9 @@
         [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
             handler([[NSMutableDictionary alloc]initWithDictionary:key?[responseObject valueForKeyPath:@"data"]:responseObject], NULL);
         } failure:^(NSURLSessionTask *operation, NSError *error) {
-            [PPManager processAFError:error];
+            if(error) {
+                [PPManager processAFError:error];
+            }
             NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
             handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
         }];
@@ -130,6 +132,7 @@
             if (!error) {
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
             } else {
+                [PPManager processAFError:error];
                 NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
             }
         }] resume];
