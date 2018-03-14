@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 + (PPManager*)sharedInstance;
 + (AFHTTPSessionManager *)buildAF;
 + (NSMutableURLRequest *)buildAFRequestForBodyParms:(NSString*) verb andUrlString:(NSString*)urlString;
++ (void)processAFError:(NSError*) e;
++ (void)processAFResponse:(NSDictionary*) d;
 - (void)configure:(NSString *)clientId secret:(NSString*)secret andRedirectURI:(NSString*)redirectURI;
 - (void)getProfileAndBucket:(void(^)(NSError *error))handler;
 - (void)handleOpenURL:(NSURL *)url;

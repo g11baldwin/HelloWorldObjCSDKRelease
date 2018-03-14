@@ -65,6 +65,20 @@
     [req setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     return(req);
 }
+
++ (void)processAFError:(NSError*) e
+{
+    [[PPManager sharedInstance] refreshAccessToken];
+}
++ (void)processAFResponse:(NSDictionary*) d
+{
+    if((d &&
+        (([d objectForKey:@"error_code"] == 0x4011) && [[d objectForKey:@"error_description"] isEqualToString:@"Application does not have permission"])) ||
+        (([d objectForKey:@"error_code"] == 0x401) && [[d objectForKey:@"error_description"] isEqualToString:@"Bad access token!"])) {
+            [[PPManager sharedInstance] refreshAccessToken];
+    }
+}
+
 - (NSString*)getAccessToken
 {
     return _accessToken;
