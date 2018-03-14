@@ -246,11 +246,6 @@
         [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
         [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
         dateFromString = [rfc3339DateFormatter dateFromString:et];
-/*
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-        NSDate *dateFromString = [dateFormatter dateFromString:et];
-*/
         _expirationTime = dateFromString;
         if([[NSDate date] compare: dateFromString] == NSOrderedAscending) { // still have TTL with this token
             return TRUE;
@@ -267,9 +262,11 @@
     [PPManager sharedInstance].accessToken = NULL;
     
     // invalidate token info in keychain by setting expiration time==now()
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
+    NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    NSString *stringDate = [rfc3339DateFormatter stringFromDate:[NSDate date]];
     [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"auth_code"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"access_token"];
