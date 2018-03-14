@@ -240,8 +240,7 @@
         [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
         NSDate *dateFromString = [dateFormatter dateFromString:et];
         _expirationTime = dateFromString;
-        
-        if([[NSDate date] compare: dateFromString]) {
+        if([[NSDate date] compare: dateFromString] == NSOrderedAscending) { // still have TTL with this token
             return TRUE;
         } else {
             [[PPManager sharedInstance] refreshAccessToken];
