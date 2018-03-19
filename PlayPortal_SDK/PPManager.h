@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 - (void)getProfileAndBucket:(void(^)(NSError *error))handler;
 - (void)handleOpenURL:(NSURL *)url;
 - (void)getInitialToken:(void(^)(NSError *error))handler;
-- (void)refreshAccessToken;
+- (void)refreshAccessToken:(void(^)(NSError *error))handler;
 - (NSString*)getAccessToken;
 - (BOOL)isAuthenticated;
 -(void)logout;

@@ -22,17 +22,17 @@
 // If user isn't currently authenticated with server, then perform oauth login
 - (void)login
 {
-	if ([PPManager sharedInstance].managerStatus == PPStatusUnknown) {
-		[self dismissSafari];
-		self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-	} else if([[PPManager sharedInstance] isAuthenticated]) {
-        [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
-            [self dismissSafari];
-//            NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
-//            [[PPManager sharedInstance].PPuserobj inflateWith:user];
-            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
-        }];
-    } else {
+//    if ([PPManager sharedInstance].managerStatus == PPStatusUnknown) {
+//        [self dismissSafari];
+//        self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+//    } else if([[PPManager sharedInstance] isAuthenticated]) {
+//        [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
+//            [self dismissSafari];
+////            NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
+////            [[PPManager sharedInstance].PPuserobj inflateWith:user];
+//            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+//        }];
+//    } else {
 		NSString* pre = @"https://sandbox.iokids.net/oauth/signin?client_id=";
 		NSString* cid = [PPManager sharedInstance].clientId;
 		NSString* mid = @"&redirect_uri=";
@@ -51,7 +51,7 @@
 		}
 		
 		[topController presentViewController:_svc animated:YES completion:nil];
-    }
+//    }
 	
 }
 
@@ -63,23 +63,17 @@
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
-    [self dismissSafari];
+//    [self dismissSafari];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
-        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+//        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         [PPManager processAFError:error];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        if([PPManager sharedInstance].PPuserobj == nil) {
-            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-            handler(error);
-        } else {
-            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
-            handler(NULL);
-        }
+        handler(error);
     }];
 }
 
