@@ -22,14 +22,17 @@
 // If user isn't currently authenticated with server, then perform oauth login
 - (void)login
 {
-	if ([PPManager sharedInstance].managerStatus == PPStatusUnknown) {
-		[self dismissSafari];
-		self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-	} else if([[PPManager sharedInstance] isAuthenticated]) {
-		NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
-		[self dismissSafari];
-		self.addUserListener(user, NULL);
-    } else {
+//    if ([PPManager sharedInstance].managerStatus == PPStatusUnknown) {
+//        [self dismissSafari];
+//        self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
+//    } else if([[PPManager sharedInstance] isAuthenticated]) {
+//        [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
+//            [self dismissSafari];
+////            NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
+////            [[PPManager sharedInstance].PPuserobj inflateWith:user];
+//            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+//        }];
+//    } else {
 		NSString* pre = @"https://sandbox.iokids.net/oauth/signin?client_id=";
 		NSString* cid = [PPManager sharedInstance].clientId;
 		NSString* mid = @"&redirect_uri=";
@@ -48,7 +51,7 @@
 		}
 		
 		[topController presentViewController:_svc animated:YES completion:nil];
-    }
+//    }
 	
 }
 
@@ -60,32 +63,42 @@
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
-    [self dismissSafari];
+//    [self dismissSafari];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
-
-        // attempt to create / open this user's private data storage
-        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
-            if(error) {
-                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
-            }
-        }];
-        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+//        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+        handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        if([PPManager sharedInstance].PPuserobj == nil) {
-            self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-        } else {
-            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
-        }
+        handler(error);
     }];
 }
 
-- (UIImage*)getProfilePic
+- (void)getFriendsProfiles:(void(^)(NSError *error))handler
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/friends"];
+    [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSMutableArray *myfriends = [NSArray arrayWithObjects:responseObject, nil];
+        [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
+         handler(NULL);
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
+        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        handler(error);
+    }];
+}
+
+- (UIImage*)getProfilePic:(NSString*)userIdOrimageId
+{
+    NSString* urlString;
+    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    } else {
+            urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+    }
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -95,12 +108,19 @@
     
     NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
     UIImage *image = [UIImage imageWithData:imageData];
-
+    
     return image;
 }
-- (UIImage*)getCoverPic
+
+- (UIImage*)getCoverPic:(NSString*)userIdOrimageId
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    NSString* urlString;
+    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    } else {
+        urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+    }
+   
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -125,15 +145,30 @@
     return (_userDictionary != nil) ? [[PPManager sharedInstance].PPuserobj valueForKey:@"handle"] : @"unknown";
 }
 
+- (void)searchForUsers:(NSString*)matchingString handler:(void(^)(NSArray* matchingUsers, NSError *error))handler
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@?term=%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/search", matchingString];
+    [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSArray *usersMatchingSearch = [NSArray arrayWithObjects:responseObject, nil];
+        handler(usersMatchingSearch, NULL);
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [PPManager processAFError:error];
+        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        handler(NULL, error);
+    }];
+}
+
+
+
 -(void)dismissSafari
 {
-	UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-	while (topController.presentedViewController) {
-		topController = topController.presentedViewController;
-	}
-	if (topController == _svc) {
-		[_svc dismissViewControllerAnimated:true completion:NULL];
-	}
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    if (topController == _svc) {
+        [_svc dismissViewControllerAnimated:true completion:NULL];
+    }
 }
 
 @end

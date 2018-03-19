@@ -1,55 +1,38 @@
 //
-//  HelloWorldTests.m
+//  BucketTest.m
 //  HelloWorldTests
 //
-//  Created by blackCloud on 3/6/18.
+//  Created by Gary J. Baldwin on 3/8/18.
 //  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
 #import "PPManager.h"
-#import "PPUserObject.h"
-#import "PPUserService.h"
 #import "PPDataService.h"
+#import "PPUserService.h"
 
-@interface HelloWorldTests : XCTestCase
+@interface BucketTest : XCTestCase
 
 @end
 
-@implementation HelloWorldTests
+@implementation BucketTest
 
 - (void)setUp {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
-    [[PPManager sharedInstance].PPusersvc login];
-
-    
 }
 
-- (void)tearDown
-{
+- (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
 
-- (void)testUser
-{
-    [[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error) {
-        NSLog(@"%s", __PRETTY_FUNCTION__);
-    }];
-}
-
-
-- (void)testBucket
-{
-    
+- (void)testBucketCreate {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
+    /*
     __block NSInteger startingIndex;
-    [[PPManager sharedInstance].PPusersvc login];
-
+    
     NSLog(@"XCT testing : %S", __PRETTY_FUNCTION__);
     [[PPManager sharedInstance].PPusersvc getProfile:^(NSError* error) {
         if(error) {
@@ -74,15 +57,14 @@
     [[PPManager sharedInstance].PPdatasvc writeBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:@"lasttestkey" andValue:[NSString stringWithFormat:@"%ld", startingIndex+10] push:FALSE handler:^(NSError *error) {
         if(error) NSLog(@"XCT writeBucket ERROR KV %@:%@", @"lasttestkey", [NSString stringWithFormat:@"%ld", startingIndex+10]);
     }];
-
-    
+*/
 }
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
-}
-
+    /*
+ - (void)testPerformanceExample {
+ // This is an example of a performance test case.
+ [self measureBlock:^{
+ // Put the code you want to measure the time of here.
+ }];
+ }
+*/
 @end

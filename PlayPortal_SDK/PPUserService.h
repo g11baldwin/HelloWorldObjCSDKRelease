@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "PPUserObject.h"
+#import "PPFriendsObject.h"
 
 @interface PPUserService : NSObject
 
@@ -16,9 +17,11 @@
 - (void)login;
 - (void)logout;
 - (void)getProfile: (void(^)(NSError *error))handler;
-- (UIImage*)getProfilePic;
-- (UIImage*)getCoverPic;
+- (UIImage*)getProfilePic:(NSString*)userId;
+- (UIImage*)getCoverPic:(NSString*)userId;
 - (NSString*)getMyId;
 - (NSString*)getMyUsername;
+- (void)getFriendsProfiles: (void(^)(NSError *error))handler;
 
+- (void)searchForUsers:(NSString*)matchingString handler:(void(^)(NSArray* matchingUsers, NSError* error))handler;
 @end
