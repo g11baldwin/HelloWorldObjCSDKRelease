@@ -24,6 +24,8 @@
 @property (readwrite, nonatomic, copy) NSString* authCode;
 @property (readwrite, nonatomic, copy) NSDate* expirationTime;
 
+@property (readwrite, nonatomic) BOOL loading;
+
 @end
 
 @implementation PPManager
@@ -68,14 +70,14 @@
 
 + (void)processAFError:(NSError*) e
 {
-    [[PPManager sharedInstance] refreshAccessToken];
+    [[PPManager sharedInstance] refreshAccessToken:^(NSError *error){}];
 }
 + (void)processAFResponse:(NSDictionary*) d
 {
     if((d &&
         (([d objectForKey:@"error_code"] == 0x4011) && [[d objectForKey:@"error_description"] isEqualToString:@"Application does not have permission"])) ||
         (([d objectForKey:@"error_code"] == 0x401) && [[d objectForKey:@"error_description"] isEqualToString:@"Bad access token!"])) {
-            [[PPManager sharedInstance] refreshAccessToken];
+        [[PPManager sharedInstance] refreshAccessToken:^(NSError *error){}];
     }
 }
 
@@ -92,6 +94,23 @@
         [PPManager sharedInstance].clientSecret = secret;
         [PPManager sharedInstance].redirectURI = redirectURI;
         [PPManager sharedInstance].managerStatus = PPStatusConfigured;
+        [[PPManager sharedInstance] isAuthenticated:^(BOOL isAuthenticated, NSError* error) {
+            if (isAuthenticated) {
+                [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
+                    if (error) {
+                        [PPManager sharedInstance].PPusersvc.addUserListener(NULL, error);
+                    } else {
+                        [PPManager sharedInstance].PPusersvc.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+                    }
+                }];
+            } else if (error) {
+                [PPManager sharedInstance].PPusersvc.addUserListener(NULL, error);
+            } else {
+                if ([PPManager sharedInstance].PPusersvc.addUserListener != NULL) {
+                    [PPManager sharedInstance].PPusersvc.addUserListener(NULL, NULL);
+                }
+            }
+        }];
     }
 }
 - (void)getProfileAndBucket:(void(^)(NSError *error))handler
@@ -99,16 +118,19 @@
     [[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error){
         if (error) {
             NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
-        }
-        
-        // attempt to create / open this user's private data storage
-        NSLog(@"%@ userObj:%@", NSStringFromSelector(_cmd), [PPManager sharedInstance].PPuserobj.userId);
-        [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
-            if(error) {
-                NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
-            }
             handler(error);
-        }];
+        } else {
+            // attempt to create / open this user's private data storage
+            NSLog(@"%@ userObj:%@", NSStringFromSelector(_cmd), [PPManager sharedInstance].PPuserobj.userId);
+            [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
+                if(error) {
+                    NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+                    handler(error);
+                } else {
+                    handler(NULL);
+                }
+            }];
+        }
     }];
 }
      
@@ -124,30 +146,32 @@
         [[PPManager sharedInstance] getInitialToken:^(NSError *error){
             if (error) {
                 NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+                [self dismissTopVC];
             } else {
-                [[PPManager sharedInstance].PPusersvc getProfile:^(NSError *error){
-                    if (error) {
-                        NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
-                    }
-                    
-                    // attempt to create / open this user's private data storage
-                    [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] handler:^(NSError* error) {
-                        if(error) {
-                            NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+                [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
+                    if (!error) {
+                        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+                        while (topController.presentedViewController) {
+                            topController = topController.presentedViewController;
                         }
-                    }];
-
-/*
-                    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-                    while (topController.presentedViewController) {
-                        topController = topController.presentedViewController;
+                        [topController dismissViewControllerAnimated:true completion:^(void){
+                            [PPManager sharedInstance].PPusersvc.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+                        }];
+                    } else {
+                        [self dismissTopVC];
                     }
-                    [topController dismissViewControllerAnimated:true completion:NULL];
-*/
                 }];
             }
         }];
     }
+}
+
+-(void)dismissTopVC {
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    [topController dismissViewControllerAnimated:true completion:NULL];
 }
 
 // After SSO auth, get an access token for validating API requests
@@ -179,7 +203,7 @@
     }];
 }
 
-- (void)refreshAccessToken
+- (void)refreshAccessToken:(void(^)(NSError *error))handler
 {
     NSLog(@"%@  refreshAccessToken", NSStringFromSelector(_cmd));
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiOauthBase, @"token"];
@@ -200,65 +224,89 @@
         if([[responseObject objectForKey:@"expires_in"] isEqualToString:@"1d"]) {
             delta = 3600 * 11;
         }
-        [PPManager sharedInstance].expirationTime = [[NSDate alloc] initWithTimeIntervalSinceNow:delta];
 
-        [self storeTokensInKeychain];  // update keychain
+        [PPManager sharedInstance].expirationTime = [[NSDate alloc] initWithTimeIntervalSinceNow:delta];
+        [self storeTokensInKeychain];
+        handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+        handler(error);
     }];
 }
 
-- (void)storeTokensInKeychain
-{
+- (void)storeTokensInKeychain {
     [[PDKeychainBindings sharedKeychainBindings] setObject:_refreshToken forKey:@"refresh_token"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:_accessToken forKey:@"access_token"];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
+    NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    NSString *stringDate = [rfc3339DateFormatter stringFromDate:[PPManager sharedInstance].expirationTime];
     [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
 }
 
 
-- (BOOL)isAuthenticated
+- (void)isAuthenticated:(void(^)(BOOL isAuthenticated, NSError*  error))handler
 {
     NSString* rt = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"refresh_token"];
     NSString* at = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"access_token"];
     NSString* et = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"];
     NSString* ac = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"auth_code"];
     NSLog(@"%@ keychain parms: rt:%@  at:%@  et:%@  ac:%@", NSStringFromSelector(_cmd), rt, at, et, ac);
-    if(!rt || !at || !et || !ac) {
-        [[PPManager sharedInstance] getInitialToken:^(NSError *error){
-            if (error) {
-                NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
-            }
-        }];
-    } else {
-        _refreshToken = rt;
-        _accessToken = at;
-        _authCode = ac;
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-        NSDate *dateFromString = [dateFormatter dateFromString:et];
-        _expirationTime = dateFromString;
-        if([[NSDate date] compare: dateFromString] == NSOrderedAscending) { // still have TTL with this token
-            return TRUE;
+    if([self allTokensExist]) {
+        if ([[PPManager sharedInstance] tokensNotExpired]) {
+            [PPManager sharedInstance].refreshToken = rt;
+            [PPManager sharedInstance].accessToken = at;
+            handler(TRUE, NULL);
         } else {
-            [[PPManager sharedInstance] refreshAccessToken];
-            return FALSE;
+            [[PPManager sharedInstance] refreshAccessToken:^(NSError *error){
+                if (error) {
+                    NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+                    [[PPManager sharedInstance] logout];
+                    handler(FALSE, error);
+                } else {
+                    handler(TRUE, NULL);
+                }
+            }];
         }
+    } else {
+        [[PPManager sharedInstance] logout];
+        handler(FALSE, NULL);
     }
-    return FALSE;
+}
+
+-(BOOL)allTokensExist {
+    NSString* rt = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"refresh_token"];
+    NSString* et = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"];
+    return !(!rt || !et);
+}
+
+-(BOOL)tokensNotExpired {
+    NSString* et = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"];
+    NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    NSDate* dateFromString;
+    [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    dateFromString = [rfc3339DateFormatter dateFromString:et];
+    _expirationTime = dateFromString;
+    if([[NSDate date] compare: dateFromString] == NSOrderedAscending) {
+        return TRUE;
+    } else {
+        return FALSE;
+    };
 }
          
 -(void)logout {
     [PPManager sharedInstance].refreshToken = NULL;
     [PPManager sharedInstance].accessToken = NULL;
-    
     // invalidate token info in keychain by setting expiration time==now()
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd-MM-yyyy:HH:mm:ss"];
-    NSString *stringDate = [dateFormatter stringFromDate:[NSDate date]];
-    [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
+    NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    NSString *stringDate = [rfc3339DateFormatter stringFromDate:[NSDate date]];
+//    [[PDKeychainBindings sharedKeychainBindings] setObject:stringDate forKey:@"expiration_time"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"auth_code"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"access_token"];
     
