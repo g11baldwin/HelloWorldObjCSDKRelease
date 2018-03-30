@@ -38,10 +38,13 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
                                 <rect key="frame" x="108" y="584" width="158" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="guest login"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="1b9-O5-WPc"/>
+                                    <constraint firstAttribute="width" constant="158" id="NeV-o5-uAd"/>
+                                </constraints>
+                                <state key="normal" title="Guest Login"/>
                                 <connections>
                                     <action selector="didTouchAnonymous" destination="BYZ-38-t0r" eventType="touchUpInside" id="4JR-PC-Aqv"/>
                                 </connections>
@@ -49,6 +52,8 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="0fG-6K-VfT" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="7SH-ei-xVS"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="0fG-6K-VfT" secondAttribute="bottom" constant="53" id="7Ux-gu-YbB"/>
                             <constraint firstItem="r0G-xL-z3x" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="ITH-H1-CUL"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="r0G-xL-z3x" secondAttribute="trailing" constant="16" id="PPZ-kh-fwh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zBi-he-E8h" secondAttribute="trailing" constant="16" id="WE1-Xg-WbY"/>
