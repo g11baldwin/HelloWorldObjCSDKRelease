@@ -15,7 +15,7 @@
 @implementation PPDataService
 
 // Either creates a new bucket or joins an existing bucket
--(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
+-(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users public:(NSString*)isPublic handler:(void(^)(NSError* error))handler
 {
     if(bucketName && users && users.count) {
         // do a GET from the bucketName to see if it exists (or not)
@@ -24,8 +24,9 @@
                 NSLog(@"%@ User bucket %@ already exists and is opened: %@", NSStringFromSelector(_cmd), bucketName, error);
                 handler(NULL); // bucket exists
             } else { // create one
-                [self createBucket:bucketName andUsers:users handler:^(NSError* error) {
+                [self createBucket:bucketName andUsers:users public:isPublic handler:^(NSError* error) {
                     if(error) NSLog(@"%@ Error: dang... bucket problems! %@", NSStringFromSelector(_cmd), error);
+                    handler(error);
                 }];
             }
         }];
@@ -36,11 +37,14 @@
 }
 
 // Create a new bucket or join to an existing bucket
--(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler
+-(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users public:(NSString*)isPublic handler:(void(^)(NSError* error))handler
 {
     if(bucketName && users && users.count) {
+        NSLog(@"%@ attempting bucket create name:%@ for users:%@", NSStringFromSelector(_cmd), bucketName, users);
+
         NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"app/v1/bucket"];
-        NSDictionary *body = @{@"public":@"FALSE", @"id":bucketName, @"users":users, @"data":@{@"id":[[[PPManager sharedInstance]PPusersvc] getMyId]}, @"access_token": [[PPManager sharedInstance] getAccessToken]};
+        NSDictionary *body = @{@"public":isPublic, @"id":bucketName, @"users":users, @"data":@{@"id":[[[PPManager sharedInstance]PPusersvc] getMyId]}, @"access_token": [[PPManager sharedInstance] getAccessToken]};
+        NSLog(@"%@ body parms:%@", NSStringFromSelector(_cmd), body);
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
         NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -50,10 +54,15 @@
         [req setHTTPBody:[jsonString dataUsingEncoding:NSUTF8StringEncoding]];
         [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
             if (!error) {
-                NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
+                NSLog(@"%@ Bucket created - reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
+                handler(NULL);
             } else {
-                [PPManager processAFError:error];
-                NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
+                [PPManager processAFError:error withRetryBlock:^{
+                    [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response2, id  _Nullable responseObject2, NSError * _Nullable error2) {
+                        NSLog(@"%@ Retry block: %@ %@ %@", NSStringFromSelector(_cmd), error2, response2, responseObject2);
+                        handler(error2);
+                    }];
+                }];
             }
         }] resume];
     } else {
@@ -78,9 +87,13 @@
             if (!error) {
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
             } else {
-                [PPManager processAFError:responseObject];
-                NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
+                [PPManager processAFError:error withRetryBlock:^{
+                    [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response2, id  _Nullable responseObject2, NSError * _Nullable error2) {
+                        NSLog(@"%@ Retry block %@ %@ %@", NSStringFromSelector(_cmd), error2, response2, responseObject2);
+                    }];
+                }];
             }
+            handler(error);
         }] resume];
     } else {
         handler([NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
@@ -105,10 +118,19 @@
             handler([[NSMutableDictionary alloc]initWithDictionary:key?[responseObject valueForKeyPath:@"data"]:responseObject], NULL);
         } failure:^(NSURLSessionTask *operation, NSError *error) {
             if(error) {
-                [PPManager processAFError:error];
+                [PPManager processAFError:error withRetryBlock:^{
+                    [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject2) {
+                        NSLog(@"%@ Retry block %@ ", NSStringFromSelector(_cmd), responseObject2);
+                        handler([[NSMutableDictionary alloc]initWithDictionary:key?[responseObject2 valueForKeyPath:@"data"]:responseObject2], NULL);
+                    } failure:^(NSURLSessionTask *operation, NSError *error2) {
+                        NSLog(@"%@ Retry block Error %@", NSStringFromSelector(_cmd), error2);
+                        handler(NULL, error2);
+                    }];
+                }];
+            } else {
+                NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
+                handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
             }
-            NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-            handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
         }];
     } else {
         handler(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
@@ -132,8 +154,11 @@
             if (!error) {
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
             } else {
-                [PPManager processAFError:error];
-                NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
+                [PPManager processAFError:error withRetryBlock:^{
+                    [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response2, id  _Nullable responseObject2, NSError * _Nullable error2) {
+                        NSLog(@"%@ Retry block: %@ %@ %@", NSStringFromSelector(_cmd), error2, response2, responseObject2);
+                    }] resume];
+                }];
             }
         }] resume];
     }
@@ -151,7 +176,7 @@
             
             [self deleteBucket:bucketName handler: ^(NSError* error) {
                 if(!error) {
-                    [self createBucket:bucketName andUsers:userlist handler:^(NSError* error) {
+                    [self createBucket:bucketName andUsers:userlist public:@"TRUE" handler:^(NSError* error) {
                         if(error) NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
                         handler(NULL);
                     }];
@@ -193,9 +218,13 @@
                 NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
                 handler(NULL);
             } else {
-                [PPManager processAFError:error];
                 NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
-                handler(error);
+                [PPManager processAFError:error withRetryBlock:^{
+                    [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response2, id  _Nullable responseObject2, NSError * _Nullable error2) {
+                        NSLog(@"%@ Retry block: %@ %@ %@", NSStringFromSelector(_cmd), error2, response2, responseObject2);
+                        handler(error2);
+                    }] resume];
+                }];
             }
         }] resume];
     }

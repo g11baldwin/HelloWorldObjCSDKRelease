@@ -10,8 +10,8 @@
 
 @interface PPDataService : NSObject
 
--(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler;
--(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users handler:(void(^)(NSError* error))handler;
+-(void)openBucket:(NSString*)bucketName andUsers:(NSArray*)users  public:(NSString*)isPublic handler:(void(^)(NSError* error))handler;
+-(void)createBucket:(NSString*)bucketName andUsers:(NSArray*)users public:(NSString*)isPublic handler:(void(^)(NSError* error))handler;
 -(void)writeBucket:(NSString*)bucketName andKey:(NSString*)key andValue:(NSString*)value push:(BOOL)push handler:(void(^)(NSError* error))handler;
 -(void)readBucket:(NSString*)bucketName andKey:(NSString*)key handler:(void(^)(NSDictionary* d, NSError* error))handler;
 -(void)deleteFromBucket:(NSString*)bucketName andKey:(NSString*)key;

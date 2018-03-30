@@ -24,7 +24,10 @@
 @property NSString* coverPhotoId;
 @property UIImage* coverPhoto;
 @property NSString* myDataStorage;
+@property NSString* myAppGlobalDataStorage; // shared among all app users
+@property NSString* myAge;
 
 - (void)inflateWith:(NSDictionary*)d;
+- (NSString*)getMyDataStorageName;
 
 @end

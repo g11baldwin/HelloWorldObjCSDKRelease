@@ -8,6 +8,9 @@
 #ifndef PPManager_h
 #define PPManager_h
 
+//#define TEST_SERVER 1  // uncommenting this points app to TEST server instead of SANDBOX
+
+
 #import <Foundation/Foundation.h>
 #import "PPUserService.h"
 #import "PPDataService.h"
@@ -37,7 +40,7 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 + (PPManager*)sharedInstance;
 + (AFHTTPSessionManager *)buildAF;
 + (NSMutableURLRequest *)buildAFRequestForBodyParms:(NSString*) verb andUrlString:(NSString*)urlString;
-+ (void)processAFError:(NSError*) e;
++ (void)processAFError:(NSError*)e  withRetryBlock:(void (^)(void))retryBlock;
 + (void)processAFResponse:(NSDictionary*) d;
 - (void)configure:(NSString *)clientId secret:(NSString*)secret andRedirectURI:(NSString*)redirectURI;
 - (void)getProfileAndBucket:(void(^)(NSError *error))handler;
@@ -45,8 +48,14 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 - (void)getInitialToken:(void(^)(NSError *error))handler;
 - (void)refreshAccessToken:(void(^)(NSError *error))handler;
 - (NSString*)getAccessToken;
-- (BOOL)isAuthenticated;
--(void)logout;
+- (void)extractAndSaveTokens:(NSDictionary*)d;
+- (void)isAuthenticated:(void(^)(BOOL isAuthenticated, NSError*  error))handler;
+- (void)logout;
+- (NSString *)getDeviceToken;
++ (NSDate*)dateFromString:(NSString*)datestring;
++ (NSString *)stringFromNSDate:(NSDate*)date;
+- (NSString*)getAge;
+- (void)captureAge:(NSString*)age;
 
 @end
 #endif

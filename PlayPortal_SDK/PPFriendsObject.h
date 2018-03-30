@@ -9,10 +9,11 @@
 #import "PPUserObject.h"
 
 @interface PPFriendsObject : PPUserObject
-@property NSMutableArray *myFriends;
+@property NSMutableDictionary *myFriends;
 
 - (void)inflateFriendsList:(NSMutableArray*)a;
 - (NSInteger)getFriendsCount;
 - (UIImage*)getFriendsProfilePic:(NSString*)friendId;
 - (UIImage*)getFriendsCoverPic:(NSString*)friendId;
+- (NSDictionary*)getFriendAtIndex:(NSInteger)index;
 @end

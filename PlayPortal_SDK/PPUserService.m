@@ -22,17 +22,6 @@
 // If user isn't currently authenticated with server, then perform oauth login
 - (void)login
 {
-//    if ([PPManager sharedInstance].managerStatus == PPStatusUnknown) {
-//        [self dismissSafari];
-//        self.addUserListener(NULL, [NSError errorWithDomain:@"com.dynepic.playportal-sdk" code:01 userInfo:NULL]);
-//    } else if([[PPManager sharedInstance] isAuthenticated]) {
-//        [[PPManager sharedInstance] getProfileAndBucket:^(NSError* error) {
-//            [self dismissSafari];
-////            NSDictionary* user = [[NSMutableDictionary alloc]initWithDictionary: _userDictionary];
-////            [[PPManager sharedInstance].PPuserobj inflateWith:user];
-//            self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
-//        }];
-//    } else {
 		NSString* pre = @"https://sandbox.iokids.net/oauth/signin?client_id=";
 		NSString* cid = [PPManager sharedInstance].clientId;
 		NSString* mid = @"&redirect_uri=";
@@ -55,6 +44,60 @@
 	
 }
 
+- (void)loginAnonymously:(NSDate *)birthdate
+{
+    NSLog(@"%@ app user logging in anonymously...", NSStringFromSelector(_cmd));
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
+
+    // PUT /my/profile
+    //
+    // REQUEST
+    // body: {
+    //   anonymous: true (required),
+    //   dateOfBirth: number,
+    //   clientId: String,
+    //   deviceToken?: String
+    // },
+    // headers: {
+    //   accesstoken: String
+    // }
+    
+        NSDictionary *body = @{@"anonymous":@"TRUE", @"dateOfBirth": [PPManager stringFromNSDate:birthdate], @"clientId":[PPManager sharedInstance].clientId, @"deviceToken": [[PPManager sharedInstance] getDeviceToken]};
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        NSMutableURLRequest *req = [PPManager buildAFRequestForBodyParms: @"PUT" andUrlString:urlString];
+        [req setHTTPBody:[jsonString dataUsingEncoding:NSUTF8StringEncoding]];
+        [[manager dataTaskWithRequest:req completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+            if (!error) {
+                NSDictionary *dictionary = [(NSHTTPURLResponse*)response allHeaderFields]; // Capture accessToken and refreshToken from header
+                [[PPManager sharedInstance] extractAndSaveTokens:dictionary];
+                NSLog(@"%@ response: %@", NSStringFromSelector(_cmd), dictionary);
+                NSLog(@"%@ Reply JSON: %@", NSStringFromSelector(_cmd), responseObject);
+
+                NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
+                [[PPManager sharedInstance].PPuserobj inflateWith:user];
+
+                [[PPManager sharedInstance].PPdatasvc openBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andUsers:(NSArray *)[NSArray arrayWithObjects:[PPManager sharedInstance].PPuserobj.userId, nil] public:@"FALSE" handler:^(NSError* error) {
+                    if(error) {
+                        NSLog(@"%@ Error: Unable to open/create user bucket - %@", NSStringFromSelector(_cmd), error);
+                        [PPManager sharedInstance].PPusersvc.addUserListener(NULL, error);
+                    } else {
+                        NSLog(@"%@ Open/create user bucket for user: %@", NSStringFromSelector(_cmd), user);
+                        [PPManager sharedInstance].PPusersvc.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
+                    }
+                }];
+            } else {
+                [PPManager processAFError:error withRetryBlock:NULL];
+                NSLog(@"%@ Error %@ %@ %@", NSStringFromSelector(_cmd), error, response, responseObject);
+                [PPManager sharedInstance].PPusersvc.addUserListener(NULL, error);
+            }
+        }] resume];
+}
+
+
 -(void)logout
 {
 	[[PPManager sharedInstance] logout];
@@ -63,18 +106,25 @@
 - (void)getProfile: (void(^)(NSError *error))handler
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
-//    [self dismissSafari];
     [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         _userDictionary = responseObject;
         NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject];
         [[PPManager sharedInstance].PPuserobj inflateWith:user];
-//        self.addUserListener([PPManager sharedInstance].PPuserobj, NULL);
         handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        [PPManager processAFError:error];
-        NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
-        handler(error);
-    }];
+        [PPManager processAFError:error withRetryBlock:^{
+            [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject2) {
+                NSLog(@"%@ Retry block %@ ", NSStringFromSelector(_cmd), responseObject2);
+                _userDictionary = responseObject2;
+                NSDictionary *user = [[NSMutableDictionary alloc]initWithDictionary:responseObject2];
+                [[PPManager sharedInstance].PPuserobj inflateWith:user];
+                handler(NULL);
+            } failure:^(NSURLSessionTask *operation, NSError *error2) {
+                NSLog(@"%@ Retry block Error %@", NSStringFromSelector(_cmd), error2);
+                handler(error2);
+            }];
+        }];
+      }];
 }
 
 - (void)getFriendsProfiles:(void(^)(NSError *error))handler
@@ -85,7 +135,21 @@
         [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends];
          handler(NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        [PPManager processAFError:error];
+        [PPManager processAFError:error withRetryBlock:^{
+            [[PPManager buildAF] GET:[NSURL URLWithString:urlString].absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject2) {
+                NSLog(@"%@ Retry block %@ ", NSStringFromSelector(_cmd), responseObject2);
+                NSMutableArray *myfriends2 = [NSArray arrayWithObjects:responseObject2, nil];
+                [[PPManager sharedInstance].PPfriendsobj inflateFriendsList:myfriends2];
+                handler(NULL);
+            } failure:^(NSURLSessionTask *operation, NSError *error2) {
+                NSLog(@"%@ Retry block Error %@", NSStringFromSelector(_cmd), error2);
+                handler(error2);
+            }];
+        }];
+        
+        
+        
+        [PPManager processAFError:error withRetryBlock:NULL];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         handler(error);
     }];
@@ -97,7 +161,7 @@
     if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
         urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
     } else {
-            urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+        urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
     }
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -152,7 +216,7 @@
         NSArray *usersMatchingSearch = [NSArray arrayWithObjects:responseObject, nil];
         handler(usersMatchingSearch, NULL);
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        [PPManager processAFError:error];
+        [PPManager processAFError:error withRetryBlock:NULL];
         NSLog(@"%@ Error %@", NSStringFromSelector(_cmd), error);
         handler(NULL, error);
     }];

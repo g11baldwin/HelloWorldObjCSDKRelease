@@ -40,6 +40,9 @@
 		46387C952056E8D80013DEC1 /* PDKeychainBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 46387C6A2056E8D80013DEC1 /* PDKeychainBindings.m */; };
 		46387C962056E8D80013DEC1 /* PDKeychainBindingsController.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 46387C6B2056E8D80013DEC1 /* PDKeychainBindingsController.podspec */; };
 		46387C9A2056E8D80013DEC1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 46387C742056E8D80013DEC1 /* README.md */; };
+		4654816F206C2DFB007306F5 /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4654816E206C2DFB007306F5 /* FriendsTableViewController.m */; };
+		46548172206C990E007306F5 /* FriendContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46548171206C990E007306F5 /* FriendContainerViewController.m */; };
+		46548174206D875D007306F5 /* unknown_user.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 46548173206D875C007306F5 /* unknown_user.jpg */; };
 		4696753B20531B6D00B84CEB /* PPFriendsObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4696753A20531B6D00B84CEB /* PPFriendsObject.m */; };
 		46AB80DA2051E6C50074DF5B /* BucketTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AB80D92051E6C50074DF5B /* BucketTest.m */; };
 		46BD345920509A8400001F28 /* PPUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BD345720509A8400001F28 /* PPUserObject.m */; };
@@ -131,6 +134,11 @@
 		46387C6A2056E8D80013DEC1 /* PDKeychainBindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDKeychainBindings.m; sourceTree = "<group>"; };
 		46387C6B2056E8D80013DEC1 /* PDKeychainBindingsController.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PDKeychainBindingsController.podspec; sourceTree = "<group>"; };
 		46387C742056E8D80013DEC1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		4654816D206C2DFB007306F5 /* FriendsTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendsTableViewController.h; sourceTree = "<group>"; };
+		4654816E206C2DFB007306F5 /* FriendsTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendsTableViewController.m; sourceTree = "<group>"; };
+		46548170206C990E007306F5 /* FriendContainerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendContainerViewController.h; sourceTree = "<group>"; };
+		46548171206C990E007306F5 /* FriendContainerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendContainerViewController.m; sourceTree = "<group>"; };
+		46548173206D875C007306F5 /* unknown_user.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = unknown_user.jpg; sourceTree = "<group>"; };
 		4696753920531B6D00B84CEB /* PPFriendsObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPFriendsObject.h; sourceTree = "<group>"; };
 		4696753A20531B6D00B84CEB /* PPFriendsObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPFriendsObject.m; sourceTree = "<group>"; };
 		46AB80D92051E6C50074DF5B /* BucketTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BucketTest.m; sourceTree = "<group>"; };
@@ -199,10 +207,14 @@
 				0353101F204F86AE002D9244 /* UserViewController.h */,
 				03531020204F86AE002D9244 /* UserViewController.m */,
 				03530FB4204F58A7002D9244 /* Main.storyboard */,
+				4654816D206C2DFB007306F5 /* FriendsTableViewController.h */,
+				4654816E206C2DFB007306F5 /* FriendsTableViewController.m */,
 				03530FB7204F58A7002D9244 /* Assets.xcassets */,
 				03530FB9204F58A7002D9244 /* LaunchScreen.storyboard */,
 				03530FBC204F58A7002D9244 /* Info.plist */,
 				03530FBD204F58A7002D9244 /* main.m */,
+				46548170206C990E007306F5 /* FriendContainerViewController.h */,
+				46548171206C990E007306F5 /* FriendContainerViewController.m */,
 			);
 			path = HelloWorld;
 			sourceTree = "<group>";
@@ -243,6 +255,7 @@
 				03530FE6204F5A1B002D9244 /* PPDataService.m */,
 				03530FE7204F5A1B002D9244 /* Info.plist */,
 				50E8ADDB2050987B00E62D6F /* Assets.xcassets */,
+				46548173206D875C007306F5 /* unknown_user.jpg */,
 				50E8ADDD20509B9500E62D6F /* PPLoginButton.h */,
 				50E8ADDE20509B9500E62D6F /* PPLoginButton.m */,
 			);
@@ -429,6 +442,7 @@
 				46387C9A2056E8D80013DEC1 /* README.md in Resources */,
 				03530FBB204F58A7002D9244 /* LaunchScreen.storyboard in Resources */,
 				03530FB8204F58A7002D9244 /* Assets.xcassets in Resources */,
+				46548174206D875D007306F5 /* unknown_user.jpg in Resources */,
 				03530FB6204F58A7002D9244 /* Main.storyboard in Resources */,
 				50E8ADDC2050987B00E62D6F /* Assets.xcassets in Resources */,
 				46387C962056E8D80013DEC1 /* PDKeychainBindingsController.podspec in Resources */,
@@ -461,6 +475,8 @@
 				03530FB3204F58A7002D9244 /* ViewController.m in Sources */,
 				03530FBE204F58A7002D9244 /* main.m in Sources */,
 				03530FE9204F5A1B002D9244 /* PPUserService.m in Sources */,
+				4654816F206C2DFB007306F5 /* FriendsTableViewController.m in Sources */,
+				46548172206C990E007306F5 /* FriendContainerViewController.m in Sources */,
 				03531000204F5A22002D9244 /* AFSecurityPolicy.m in Sources */,
 				0353101B204F5AC9002D9244 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				03531021204F86AE002D9244 /* UserViewController.m in Sources */,

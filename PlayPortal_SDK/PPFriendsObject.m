@@ -11,14 +11,17 @@
 
 @implementation PPFriendsObject
 
+
 - (void)inflateFriendsList:(NSMutableArray*) a
 {
-    _myFriends = a;
-    NSLog(@"%@ myFriends array: %@", NSStringFromSelector(_cmd), _myFriends);
+    for(NSInteger i=0; i<[a count]; i++) {
+        _myFriends = [NSMutableDictionary dictionaryWithObjects:a[i] forKeys:[a[i] valueForKey:@"userId"]];
+        NSLog(@"_myFriends:%@", _myFriends);
+    }
 }
 - (NSInteger)getFriendsCount
 {
-    return _myFriends.count;
+    return [_myFriends count];
 }
 
 - (UIImage*)getFriendsProfilePic:(NSString*)friendId
@@ -30,5 +33,14 @@
     }
     return nil;
 }
-                   
+- (NSDictionary*)getFriendAtIndex:(NSInteger)index
+{
+    if(index < [self getFriendsCount]) {
+        NSArray* all = [_myFriends allKeys];
+        return [[NSDictionary alloc] initWithDictionary:[_myFriends valueForKey:all[index]]];
+    } else {
+        return [[NSDictionary alloc] initWithObjectsAndKeys:@"unknown",@"Name: ", nil];
+    }
+}
+
 @end
