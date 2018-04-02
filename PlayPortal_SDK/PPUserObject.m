@@ -19,23 +19,14 @@
             NSLog(@"not storing key:%@ value:%@", key, [d objectForKey:key]);
         } else {
             NSString* v = [d objectForKey:key];
-            
             [[PPManager sharedInstance].PPuserobj setValue:v forKey:key];
-
-//            if(v && ![key isEqualToString:@"parentFlags"] && ![key isEqualToString:@"profilePic"] && ![key isEqualToString:@"coverPhoto"]) {
-//                NSLog(@"storing key:%@ value:%@", key, [d objectForKey:key]);
-//                [[PDKeychainBindings sharedKeychainBindings] setObject:v forKey:key];  // save user profile in keychain
-//            }
         }
     }
-
     NSLog(@"%@  PPuserobj:%@", NSStringFromSelector(_cmd), [PPManager sharedInstance].PPuserobj);
 
-    // create stringname for this user's private data storage
+    // gen names for this user's private/global data storage
     [PPManager sharedInstance].PPuserobj.myDataStorage = [self getMyDataStorageName];
-    
     [PPManager sharedInstance].PPuserobj.myAppGlobalDataStorage = [self getMyAppGlobalDataStorageName];
-
 }
 
 - (NSString*)getMyDataStorageName
@@ -49,7 +40,7 @@
 - (NSString*)getMyAppGlobalDataStorageName
 {
         if(_handle) {
-            return [NSString stringWithFormat:@"%@@%@", @"globalAppData", [[[NSString stringWithString:[[NSBundle mainBundle] bundleIdentifier]] componentsSeparatedByString:@"."] lastObject]];
+            return [NSString stringWithFormat:@"%@%@@%@", @"globalAppData", ([PPManager sharedInstance].getAgeInt < 13)?@"-u13":@"", [[[NSString stringWithString:[[NSBundle mainBundle] bundleIdentifier]] componentsSeparatedByString:@"."] lastObject]];
         } else {
             return @"unknown";
         }

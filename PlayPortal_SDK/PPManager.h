@@ -55,7 +55,10 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 + (NSDate*)dateFromString:(NSString*)datestring;
 + (NSString *)stringFromNSDate:(NSDate*)date;
 - (NSString*)getAge;
+- (NSInteger)getAgeInt;
 - (void)captureAge:(NSString*)age;
+- (void)setImAnonymousStatus:(Boolean)imAnonymous;
+- (Boolean)getImAnonymousStatus;
 
 @end
 #endif

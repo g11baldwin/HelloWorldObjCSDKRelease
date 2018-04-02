@@ -26,6 +26,7 @@
 @property NSString* myDataStorage;
 @property NSString* myAppGlobalDataStorage; // shared among all app users
 @property NSString* myAge;
+@property Boolean isAnonymousUser;
 
 - (void)inflateWith:(NSDictionary*)d;
 - (NSString*)getMyDataStorageName;

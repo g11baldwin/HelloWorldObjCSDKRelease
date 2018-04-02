@@ -30,11 +30,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.handleLabel.text = self.user.handle;
-    self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName?self.user.firstName:@"anonymous", self.user.lastName?self.user.lastName:@"user"];
-    if(self.user.firstName) {
+//    self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName?self.user.firstName:@"anonymous", self.user.lastName?self.user.lastName:@"user"];
+    if([[PPManager sharedInstance] getImAnonymousStatus] == FALSE) {
+        self.nameLabel.text = [NSString stringWithFormat:@"%@ %@", self.user.firstName, self.user.lastName];
         self.profileImageView.image =  [[PPManager sharedInstance].PPusersvc getProfilePic:self.user.userId];
         self.coverPhotoImageView.image = [[PPManager sharedInstance].PPusersvc getCoverPic:self.user.userId];
     } else {
+        self.nameLabel.text = [NSString stringWithFormat:@"%@", @"anonymous user"];
         self.profileImageView.image= [UIImage imageNamed:@"unknown_user.jpg"];
         self.coverPhotoImageView.image = [UIImage imageNamed:@"unknown_user.jpg"];
     }

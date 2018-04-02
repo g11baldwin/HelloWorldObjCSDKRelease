@@ -48,6 +48,7 @@
 {
     NSLog(@"%@ app user logging in anonymously...", NSStringFromSelector(_cmd));
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
+    [[PPManager sharedInstance] setImAnonymousStatus:TRUE];
 
     // PUT /my/profile
     //

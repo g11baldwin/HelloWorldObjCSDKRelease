@@ -38,13 +38,10 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
                                 <rect key="frame" x="108" y="584" width="158" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="1b9-O5-WPc"/>
-                                    <constraint firstAttribute="width" constant="158" id="NeV-o5-uAd"/>
-                                </constraints>
-                                <state key="normal" title="Guest Login"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="guest login"/>
                                 <connections>
                                     <action selector="didTouchAnonymous" destination="BYZ-38-t0r" eventType="touchUpInside" id="4JR-PC-Aqv"/>
                                 </connections>
@@ -52,8 +49,6 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="0fG-6K-VfT" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="7SH-ei-xVS"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="0fG-6K-VfT" secondAttribute="bottom" constant="53" id="7Ux-gu-YbB"/>
                             <constraint firstItem="r0G-xL-z3x" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="ITH-H1-CUL"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="r0G-xL-z3x" secondAttribute="trailing" constant="16" id="PPZ-kh-fwh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zBi-he-E8h" secondAttribute="trailing" constant="16" id="WE1-Xg-WbY"/>
@@ -196,6 +191,7 @@
                                 <state key="normal" title="Get Friends List"/>
                                 <connections>
                                     <action selector="getFriendsTapped:" destination="WUA-pr-2om" eventType="touchUpInside" id="gv1-fs-XzO"/>
+                                    <segue destination="d7l-ah-3iD" kind="show" identifier="friendcontainersegue" id="Tat-zV-hKh"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -241,19 +237,19 @@
             <objects>
                 <tableViewController id="7Rm-E6-KZF" customClass="FriendsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="XCr-C0-exY">
-                        <rect key="frame" x="0.0" y="0.0" width="372" height="621"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="610"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="gray" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="friendcell" textLabel="EFV-j2-WYo" style="IBUITableViewCellStyleDefault" id="wv4-ib-ACJ">
-                                <rect key="frame" x="0.0" y="28" width="372" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wv4-ib-ACJ" id="YXc-zj-Lak">
-                                    <rect key="frame" x="0.0" y="0.0" width="324" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="327" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EFV-j2-WYo">
-                                            <rect key="frame" x="16" y="0.0" width="308" height="43.5"/>
+                                            <rect key="frame" x="16" y="0.0" width="311" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -282,9 +278,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rnS-Hu-V3T">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rnS-Hu-V3T">
                                 <rect key="frame" x="16" y="27" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="2X2-Ok-MCZ"/>
+                                    <constraint firstAttribute="width" constant="34" id="cC2-u5-LIb"/>
+                                </constraints>
                                 <state key="normal" title="Back"/>
                                 <connections>
                                     <action selector="backButton:" destination="d7l-ah-3iD" eventType="touchUpInside" id="8ay-e9-ERx"/>
@@ -297,15 +296,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PGI-cX-xoG">
-                                <rect key="frame" x="1" y="0.0" width="372" height="621"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PGI-cX-xoG">
+                                <rect key="frame" x="0.0" y="57" width="375" height="610"/>
                                 <connections>
-                                    <segue destination="7Rm-E6-KZF" kind="embed" id="sZs-Zq-O2q"/>
+                                    <segue destination="7Rm-E6-KZF" kind="embed" identifier="" id="sZs-Zq-O2q"/>
                                 </connections>
                             </containerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="hh7-Ep-AJE" firstAttribute="trailing" secondItem="PGI-cX-xoG" secondAttribute="trailing" id="6D0-cL-b7V"/>
+                            <constraint firstItem="hh7-Ep-AJE" firstAttribute="bottom" secondItem="PGI-cX-xoG" secondAttribute="bottom" id="8Bp-jl-bnL"/>
+                            <constraint firstItem="rnS-Hu-V3T" firstAttribute="leading" secondItem="hh7-Ep-AJE" secondAttribute="leading" constant="16" id="OtE-gX-Ryi"/>
+                            <constraint firstItem="rnS-Hu-V3T" firstAttribute="top" secondItem="hh7-Ep-AJE" secondAttribute="top" constant="7" id="VXY-u5-pHk"/>
+                            <constraint firstItem="PGI-cX-xoG" firstAttribute="leading" secondItem="hh7-Ep-AJE" secondAttribute="leading" id="eDu-21-G5V"/>
+                            <constraint firstItem="PGI-cX-xoG" firstAttribute="top" secondItem="rnS-Hu-V3T" secondAttribute="bottom" id="piO-8s-hw4"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="hh7-Ep-AJE"/>
                     </view>
                     <connections>

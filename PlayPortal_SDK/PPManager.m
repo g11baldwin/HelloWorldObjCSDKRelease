@@ -174,6 +174,8 @@
 // After SSO, redirect sends app here to begin
 - (void)handleOpenURL:(NSURL *)url
 {
+    [self setImAnonymousStatus:FALSE];
+
     NSArray *strs = [url.absoluteString componentsSeparatedByString:@"="];
     if(strs.count >= 3) {
         NSArray *substrs = [strs[1] componentsSeparatedByString:@"&"];
@@ -353,12 +355,14 @@
          
 -(void)logout {
     [PPManager sharedInstance].accessToken = NULL;
-    [PPManager sharedInstance].refreshToken = NULL;
-    [PPManager sharedInstance].expirationTime = NULL;
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"auth_code"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"access_token"];
-    [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"refresh_token"];
-    [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"expiration_time"];
+    if(([self getImAnonymousStatus]) == FALSE) {
+        [PPManager sharedInstance].refreshToken = NULL;
+        [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"refresh_token"]; // allow anonymous user to relogin w/o creating new acct
+        [PPManager sharedInstance].expirationTime = NULL;
+        [[PDKeychainBindings sharedKeychainBindings] setObject:NULL forKey:@"expiration_time"];
+    }
 }
 
 
@@ -391,13 +395,23 @@
     [PPManager sharedInstance].PPuserobj.myAge = [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"user_age"];
     return [PPManager sharedInstance].PPuserobj.myAge;
 }
+- (NSInteger)getAgeInt
+{
+    return [[self getAge] intValue];
+}
+
 -(void)captureAge:(NSString*)age
 {
     if(age) [[PDKeychainBindings sharedKeychainBindings] setObject:age forKey:@"user_age"];
 }
-
-
-
+- (void)setImAnonymousStatus:(Boolean)imAnonymous
+{
+    [[PDKeychainBindings sharedKeychainBindings] setObject:imAnonymous?@"TRUE":@"FALSE" forKey:@"user_is_anonymous"];
+}
+- (Boolean)getImAnonymousStatus
+{
+    return ([[[PDKeychainBindings sharedKeychainBindings] objectForKey:@"user_is_anonymous"] isEqualToString:@"TRUE"]? TRUE:FALSE);
+}
 @end
 
 
