@@ -44,7 +44,7 @@
 	
 }
 
-- (void)loginAnonymously:(NSDate *)birthdate
+- (void)loginAnonymously:(int)age
 {
     NSLog(@"%@ app user logging in anonymously...", NSStringFromSelector(_cmd));
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile"];
@@ -63,7 +63,7 @@
     //   accesstoken: String
     // }
     
-        NSDictionary *body = @{@"anonymous":@"TRUE", @"dateOfBirth": [PPManager stringFromNSDate:birthdate], @"clientId":[PPManager sharedInstance].clientId, @"deviceToken": [[PPManager sharedInstance] getDeviceToken]};
+        NSDictionary *body = @{@"anonymous":@"TRUE", @"dateOfBirth": [[PPManager sharedInstance] dateStringFromAge:age], @"clientId":[PPManager sharedInstance].clientId, @"deviceToken": [[PPManager sharedInstance] getDeviceToken]};
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
         NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -158,46 +158,54 @@
 
 - (UIImage*)getProfilePic:(NSString*)userIdOrimageId
 {
-    NSString* urlString;
-    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
-        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+    if ([[PPManager sharedInstance] getImAnonymousStatus]) {
+        return [UIImage imageNamed:@"unknown_user.jpg"];
     } else {
-        urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+        NSString* urlString;
+        if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+            urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/picture"];
+        } else {
+            urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+        }
+        AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+        NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+        [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+        
+        NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+        UIImage *image = [UIImage imageWithData:imageData];
+        
+        return image;
     }
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
-    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
-    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
-    
-    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
-    UIImage *image = [UIImage imageWithData:imageData];
-    
-    return image;
 }
 
 - (UIImage*)getCoverPic:(NSString*)userIdOrimageId
 {
-    NSString* urlString;
-    if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
-        urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+    if ([[PPManager sharedInstance] getImAnonymousStatus]) {
+        return [UIImage imageNamed:@"unknown_user.jpg"];
     } else {
-        urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+        NSString* urlString;
+        if([[PPManager sharedInstance].PPuserobj.userId isEqualToString:userIdOrimageId ]) {
+            urlString = [NSString stringWithFormat:@"%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/my/profile/cover"];
+        } else {
+            urlString = [NSString stringWithFormat:@"%@/%@/%@", [PPManager sharedInstance].apiUrlBase, @"user/v1/static", userIdOrimageId];
+        }
+       
+        AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
+        NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
+        [req setValue:btoken forHTTPHeaderField:@"Authorization"];
+        
+        // TODO: replace deprecated
+        NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+        UIImage *image = [UIImage imageWithData:imageData];
+        
+        return image;
     }
-   
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    NSMutableURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod: @"GET" URLString:[NSString stringWithString:urlString] parameters:nil error:nil];
-    NSString *btoken = [NSString stringWithFormat:@"%@ %@", @"Bearer", [PPManager sharedInstance].accessToken];
-    [req setValue:btoken forHTTPHeaderField:@"Authorization"];
-    
-    // TODO: replace deprecated
-    NSData *imageData = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
-    UIImage *image = [UIImage imageWithData:imageData];
-    
-    return image;
 }
 
 - (NSString*)getMyId

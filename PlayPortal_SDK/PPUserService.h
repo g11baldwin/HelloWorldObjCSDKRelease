@@ -15,7 +15,7 @@
 
 @property (nonatomic, copy) void (^addUserListener)(PPUserObject* user, NSError *error);
 - (void)login;
-- (void)loginAnonymously:(NSDate *)birthdate;
+- (void)loginAnonymously:(int)age;
 - (void)logout;
 - (void)getProfile: (void(^)(NSError *error))handler;
 - (UIImage*)getProfilePic:(NSString*)userId;
@@ -24,5 +24,6 @@
 - (NSString*)getMyUsername;
 - (void)getFriendsProfiles: (void(^)(NSError *error))handler;
 
++ (NSString *)stringFromNSDate:(NSDate*)date;
 - (void)searchForUsers:(NSString*)matchingString handler:(void(^)(NSArray* matchingUsers, NSError* error))handler;
 @end

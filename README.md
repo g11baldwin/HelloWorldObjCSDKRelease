@@ -69,7 +69,7 @@ playPORTAL <sup>TM</sup> provides a service to app developers for managing users
 	```
 * Implement the following method and provide a callback to receive a user once the login flow is completed:
 	```
-	[PPManager sharedInstance].PPusersvc.addUserListener = ^(NSDictionary *user, NSError *error){
+	[PPManager sharedInstance].PPusersvc.addUserListener = ^(PPUserObject *user, NSError *error){
 		if (error) {
 
 			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
@@ -77,9 +77,7 @@ playPORTAL <sup>TM</sup> provides a service to app developers for managing users
 		} else {
 
 			// When user is returned you can parse keys and values here
-			for(id key in user) {
-				NSLog(@"key=%@ value=%@", key, [user objectForKey:key]);
-			}
+			NSLog(@"handle=%@", user.handle);
 
 		}
 	};
@@ -89,5 +87,83 @@ playPORTAL <sup>TM</sup> provides a service to app developers for managing users
 	[[PPManager sharedInstance].PPusersvc login];
 	```
 ---
+## Anonymous Login
+
+* Call the following method to allow a user to log in anonymously:
+	```
+	int age = 12;
+	[[PPManager sharedInstance].PPusersvc loginAnonymously:age];
+	```
+---
 ## Storage
-* Coming soon!
+* When a user logs in to your app for the first time, we create a PRIVATE storage bucket just for them. This is where you can store app-specific information for that user.
+```
+[[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myDataStorage andKey:(NSString*)@"SOME_KEY" handler:^(NSDictionary* d, NSError* error) {
+      if(error) {
+      	NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+      } else if (d) {
+				//Get the value from the returned dictionary
+				[[d valueForKey:@"SOME_KEY"]
+      }
+  }];
+```
+* We also create a global PUBLIC storage bucket that all users can write to and read from.
+```
+[[PPManager sharedInstance].PPdatasvc readBucket:[PPManager sharedInstance].PPuserobj.myAppGlobalDataStorage andKey:(NSString*)@"SOME_OTHER_KEY" handler:^(NSDictionary* d, NSError* error) {
+      if(error) {
+          NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+      } else if (d) {
+				//Get the value from the returned dictionary
+				[[d valueForKey:@"SOME_OTHER_KEY"]
+      }
+  }];
+```
+* Call the following method to write to the user's private storage bucket:
+```
+[[PPManager sharedInstance].PPdatasvc
+	writeBucket:[PPManager sharedInstance].PPuserobj.myDataStorage
+	andKey:(NSString*)@"SOME_KEY"
+	andValue:(NSString*)@"SOME_VALUE"]
+	push:FALSE
+	handler:^(NSError *error) {
+		if(error) {
+			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+		} else {
+			//Bucket was written to successfully
+		}
+	}
+];
+```
+
+* Call the following method to write to the global public storage bucket:
+```
+[[PPManager sharedInstance].PPdatasvc
+	writeBucket:[PPManager sharedInstance].PPuserobj.myAppGlobalDataStorage
+	andKey:(NSString*)@"SOME_KEY"
+	andValue:(NSString*)@"SOME_VALUE"]
+	push:FALSE
+	handler:^(NSError *error) {
+		if(error) {
+			NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+		} else {
+			//Bucket was written to successfully
+		}
+	}
+];
+```
+---
+## Friends
+* Call the following method to retrieve a user's friend's list:
+```
+[[PPManager sharedInstance].PPusersvc getFriendsProfiles:^(NSError *error) {
+        if (error) {
+            NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
+        } else {
+					//Get the user's number of friends
+					[[PPManager sharedInstance].PPfriendsobj getFriendsCount]
+					//Get a particular friend
+					[[PPManager sharedInstance].PPfriendsobj getFriendAtIndex:0];
+					[NSString stringWithFormat:@"%@ %@", [d valueForKey:@"firstName"], [d valueForKey:@"lastName"]];
+        }
+    }];
+```

@@ -52,8 +52,9 @@ typedef NS_ENUM(NSInteger, PPManagerStatus) {
 - (void)isAuthenticated:(void(^)(BOOL isAuthenticated, NSError*  error))handler;
 - (void)logout;
 - (NSString *)getDeviceToken;
-+ (NSDate*)dateFromString:(NSString*)datestring;
-+ (NSString *)stringFromNSDate:(NSDate*)date;
+- (NSDate*)dateFromString:(NSString*)datestring;
+- (NSString *)stringFromNSDate:(NSDate*)date;
+- (NSString *)dateStringFromAge:(int)age;
 - (NSString*)getAge;
 - (NSInteger)getAgeInt;
 - (void)captureAge:(NSString*)age;

@@ -38,10 +38,13 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
-                                <rect key="frame" x="108" y="584" width="158" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="guest login"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fG-6K-VfT">
+                                <rect key="frame" x="108" y="617" width="158" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="eR9-hy-nhE"/>
+                                    <constraint firstAttribute="width" constant="158" id="mh1-eP-dhH"/>
+                                </constraints>
+                                <state key="normal" title="Guest Login"/>
                                 <connections>
                                     <action selector="didTouchAnonymous" destination="BYZ-38-t0r" eventType="touchUpInside" id="4JR-PC-Aqv"/>
                                 </connections>
@@ -50,7 +53,9 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="r0G-xL-z3x" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="ITH-H1-CUL"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="0fG-6K-VfT" secondAttribute="bottom" constant="20" id="Ojk-GP-s4F"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="r0G-xL-z3x" secondAttribute="trailing" constant="16" id="PPZ-kh-fwh"/>
+                            <constraint firstItem="0fG-6K-VfT" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="RPO-zI-KHL"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zBi-he-E8h" secondAttribute="trailing" constant="16" id="WE1-Xg-WbY"/>
                             <constraint firstItem="zBi-he-E8h" firstAttribute="top" secondItem="r0G-xL-z3x" secondAttribute="bottom" constant="8" id="oqy-ft-Exb"/>
                             <constraint firstItem="r0G-xL-z3x" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="vQR-Fk-yD4"/>
@@ -191,7 +196,6 @@
                                 <state key="normal" title="Get Friends List"/>
                                 <connections>
                                     <action selector="getFriendsTapped:" destination="WUA-pr-2om" eventType="touchUpInside" id="gv1-fs-XzO"/>
-                                    <segue destination="d7l-ah-3iD" kind="show" identifier="friendcontainersegue" id="Tat-zV-hKh"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -226,6 +230,7 @@
                         <outlet property="handleLabel" destination="BCD-Dc-ohj" id="CNL-1S-4kD"/>
                         <outlet property="nameLabel" destination="UNC-7U-zhF" id="g1V-38-NeP"/>
                         <outlet property="profileImageView" destination="DPl-KF-2af" id="StG-Jb-oxa"/>
+                        <segue destination="d7l-ah-3iD" kind="show" identifier="friendcontainersegue" id="wBP-wB-SJY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gIG-6l-hug" sceneMemberID="firstResponder"/>

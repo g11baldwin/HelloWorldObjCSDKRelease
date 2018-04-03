@@ -13,7 +13,10 @@
 
 -(void)inflateWith:(NSDictionary*)d;
 {
-    NSLog(@"%@  dictionary:%@", NSStringFromSelector(_cmd), d);
+    if ([[PPManager sharedInstance] getImAnonymousStatus]) {
+        [[PPManager sharedInstance].PPuserobj setValue:@"Anonymous" forKey:@"firstName"];
+        [[PPManager sharedInstance].PPuserobj setValue:@"User" forKey:@"lastName"];
+    }
     for(id key in d) {
         if([key isEqualToString:@"anonymous"]) {
             NSLog(@"not storing key:%@ value:%@", key, [d objectForKey:key]);
@@ -22,8 +25,6 @@
             [[PPManager sharedInstance].PPuserobj setValue:v forKey:key];
         }
     }
-    NSLog(@"%@  PPuserobj:%@", NSStringFromSelector(_cmd), [PPManager sharedInstance].PPuserobj);
-
     // gen names for this user's private/global data storage
     [PPManager sharedInstance].PPuserobj.myDataStorage = [self getMyDataStorageName];
     [PPManager sharedInstance].PPuserobj.myAppGlobalDataStorage = [self getMyAppGlobalDataStorageName];

@@ -303,7 +303,7 @@
 - (void)storeTokensInKeychain {
     [[PDKeychainBindings sharedKeychainBindings] setObject:_refreshToken forKey:@"refresh_token"];
     [[PDKeychainBindings sharedKeychainBindings] setObject:_accessToken forKey:@"access_token"];
-    [[PDKeychainBindings sharedKeychainBindings] setObject:[PPManager stringFromNSDate:[PPManager sharedInstance].expirationTime] forKey:@"expiration_time"];
+    [[PDKeychainBindings sharedKeychainBindings] setObject:[[PPManager sharedInstance] stringFromNSDate:[PPManager sharedInstance].expirationTime] forKey:@"expiration_time"];
 }
 
 
@@ -344,7 +344,7 @@
 }
 
 -(BOOL)tokensNotExpired {
-    if([[NSDate dateWithTimeIntervalSinceNow:0] compare: [PPManager dateFromString:[[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"]]] == NSOrderedAscending) {
+    if([[NSDate dateWithTimeIntervalSinceNow:0] compare: [[PPManager sharedInstance] dateFromString:[[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"]]] == NSOrderedAscending) {
         return TRUE;
     } else {
         NSLog(@"%@ Expired token: expiration_time: %@\n", NSStringFromSelector(_cmd), [[PDKeychainBindings sharedKeychainBindings] objectForKey:@"expiration_time"]);
@@ -371,7 +371,7 @@
     return @"unknown";
 }
 
-+ (NSDate*)dateFromString:(NSString*)datestring
+- (NSDate*)dateFromString:(NSString*)datestring
 {
     NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
     [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
@@ -380,13 +380,24 @@
     return [rfc3339DateFormatter dateFromString:datestring];
 }
 
-+ (NSString *)stringFromNSDate:(NSDate*)date
+- (NSString *)stringFromNSDate:(NSDate*)date
 {
     NSDateFormatter* rfc3339DateFormatter = [[NSDateFormatter alloc] init];
     [rfc3339DateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
     [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
     [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     return [rfc3339DateFormatter stringFromDate:date];
+}
+
+- (NSString *)dateStringFromAge:(int)age {
+    [[PPManager sharedInstance] captureAge:[NSString stringWithFormat:@"%d",age]];
+    NSDate *now = [NSDate date];
+    NSDateComponents *minusAge = [NSDateComponents new];
+    minusAge.year = -1*age;
+    NSDate *birthDate = [[NSCalendar currentCalendar] dateByAddingComponents:minusAge
+                                                                            toDate:now
+                                                                           options:0];
+    return [[PPManager sharedInstance] stringFromNSDate:birthDate];
 }
 
 
