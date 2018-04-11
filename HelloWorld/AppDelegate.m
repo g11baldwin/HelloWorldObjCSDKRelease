@@ -2,8 +2,8 @@
 //  AppDelegate.m
 //  HelloWorld
 //
-//  Created by blackCloud on 3/6/18.
-//  Copyright © 2018 blackCloud. All rights reserved.
+//  Created by Jett Black on 3/6/18.
+//  Copyright © 2018 Dynepic, Inc. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -20,7 +20,7 @@
     //Replace these with the values your generated on the playPORTAL Partner Dashboard
     NSString *cid = @"YOUR_CLIENT_ID_HERE";
     NSString *cse = @"YOUR_CLIENT_SECRET_HERE";
-    
+
     // This is the redirect that you entered in to the playPORTAL Partner Dashboard
     NSString *redirectURI = @"helloworld://redirect";
     [[PPManager sharedInstance] configure:cid secret:cse andRedirectURI:redirectURI];
