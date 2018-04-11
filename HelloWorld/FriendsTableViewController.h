@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "PPManager.h"
-#import "PPUserObject.h"
-#import "PPFriendsObject.h"
-#import "PPDataService.h"
+#import <PlayPortal/PPManager.h>
+#import <PlayPortal/PPUserObject.h>
+#import <PlayPortal/PPFriendsObject.h>
+#import <PlayPortal/PPDataService.h>
 
 @interface FriendsTableViewController : UITableViewController
 

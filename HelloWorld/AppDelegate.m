@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "PPManager.h"
+#import <PlayPortal/PPManager.h>
 
 @interface AppDelegate ()
 
@@ -21,7 +21,7 @@
     NSString *cid = @"YOUR_CLIENT_ID_HERE";
     NSString *cse = @"YOUR_CLIENT_SECRET_HERE";
     
-    
+    // This is the redirect that you entered in to the playPORTAL Partner Dashboard
     NSString *redirectURI = @"helloworld://redirect";
     [[PPManager sharedInstance] configure:cid secret:cse andRedirectURI:redirectURI];
     

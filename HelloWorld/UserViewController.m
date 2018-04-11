@@ -9,9 +9,9 @@
 
 #import "UserViewController.h"
 #import "FriendsTableViewController.h"
-#import "PPManager.h"
-#import "PPUserObject.h"
-#import "PPDataService.h"
+#import <PlayPortal/PPManager.h>
+#import <PlayPortal/PPUserObject.h>
+#import <PlayPortal/PPDataService.h>
 
 
 @interface UserViewController ()

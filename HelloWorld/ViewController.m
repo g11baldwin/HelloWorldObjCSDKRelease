@@ -9,8 +9,8 @@
 
 #import "ViewController.h"
 #import "UserViewController.h"
-#import "PPManager.h"
-#import "PPLoginButton.h"
+#import <PlayPortal/PPManager.h>
+#import <PlayPortal/PPLoginButton.h>
 
 @interface ViewController ()
 @property (readwrite, nonatomic, copy) NSString* myAge;

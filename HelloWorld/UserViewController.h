@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PPUserObject.h"
+#import <PlayPortal/PPUserObject.h>
 
 @interface UserViewController : UIViewController
 

@@ -102,7 +102,7 @@ playPORTAL <sup>TM</sup> provides a service to app developers for managing users
       if(error) {
       	NSLog(@"%@ error: %@", NSStringFromSelector(_cmd), error);
       } else if (d) {
-				//Get the value from the returned dictionary
+					//Get the value from the returned dictionary
 				[[d valueForKey:@"SOME_KEY"]
       }
   }];
